@@ -32,7 +32,7 @@ if (!file_exists($settingsFile)) {
 			$dbpw = $_POST["dbpw"];
 			$dbprefix = $_POST["dbprefix"];
 			
-			$createUsers = 
+			$create_users = 
 			"CREATE TABLE " . $dbprefix . "users (" .
          		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"username VARCHAR(100) NOT NULL," .
@@ -47,53 +47,56 @@ if (!file_exists($settingsFile)) {
          		"userlevel TINYINT NOT NULL" .
        		");";
 			
-			$createPosts = 
+			$create_tracks = 
+			"CREATE TABLE " . $dbprefix . "tracks (" .
+         		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
+         		"name VARCHAR(100) NOT NULL," .
+         		"creator_user_id INT NOT NULL COMMENT 'The creator of the track'," .
+         		"winner_user_id INT NULL COMMENT 'The first to complete the track'," .
+         		"start_ts BIGINT(12) NOT NULL," .
+         		"stop_ts BIGINT(12) NOT NULL," .
+         		// FOREIGN KEY for creator_user_id -> kc_users(id)
+         		"INDEX cre_id (creator_user_id)," .
+                "FOREIGN KEY (creator_user_id) REFERENCES " . $dbprefix . "users(id)" .
+                "ON DELETE CASCADE," .
+                // FOREIGN KEY for winner_user_id -> kc_users(id)
+         		"INDEX win_id (winner_user_id)," .
+                "FOREIGN KEY (winner_user_id) REFERENCES " . $dbprefix . "users(id)" .
+                "ON DELETE CASCADE" .
+       		");";
+			
+			$create_posts = 
 			"CREATE TABLE " . $dbprefix . "posts (" .
-         		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
-         		"title VARCHAR(100) NOT NULL," .
-         		"url_id VARCHAR(100) NOT NULL," .
-         		"time BIGINT(12) NOT NULL," .
-         		"author_id INT NOT NULL," .
-         		"content TEXT," .
-         		// FOREIGN KEY for author_id -> kc_users(id)
-         		"INDEX usr_id (author_id)," .
-                "FOREIGN KEY (author_id) REFERENCES " . $dbprefix . "users(id)" .
+				"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
+         		"track_id INT NOT NULL," .
+         		"post_numer VARCHAR(100) NOT NULL," .
+         		"radius VARCHAR(100) NOT NULL," .
+         		"longitude BIGINT(12) NOT NULL," .
+         		"latitude INT NOT NULL," .
+         		"clue TEXT," .
+         		// FOREIGN KEY for track_id -> kc_track(id)
+         		"INDEX trk_id (track_id)," .
+                "FOREIGN KEY (track_id) REFERENCES " . $dbprefix . "track(id)" .
                 "ON DELETE CASCADE" .
        		");";
 			
-			$createPages = 
-			"CREATE TABLE " . $dbprefix . "pages (" .
-         		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
-         		"title VARCHAR(100) NOT NULL," .
-         		"url_id VARCHAR(100) NOT NULL," .
-         		"time BIGINT(12) NOT NULL," .
-         		"author_id INT NOT NULL," .
-         		"content TEXT," .
-         		// FOREIGN KEY for author_id -> kc_users(id)
-         		"INDEX usr_id (author_id)," .
-                "FOREIGN KEY (author_id) REFERENCES " . $dbprefix . "users(id)" .
-                "ON DELETE CASCADE" .
-       		");";
-			
-			$createComments = 
-			"CREATE TABLE " . $dbprefix . "comments (" .
-         		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
-         		"post_id INT," .
-         		"page_id INT," .
-         		"time BIGINT(12) NOT NULL," .
-         		"author_id INT NOT NULL," .
-         		"content TEXT NOT NULL," .
-         		// FOREIGN KEY for author_id -> kc_users(id)
-         		"INDEX usr_id (author_id)," .
-                "FOREIGN KEY (author_id) REFERENCES " . $dbprefix . "users(id)" .
+			$create_visited_posts = 
+			"CREATE TABLE " . $dbprefix . "visited_posts (" .
+         		"user_id INT NOT NULL," .
+         		"track_id INT NOT NULL," .
+         		"post_id INT NOT NULL," .
+         		"ts BIGINT(12) NOT NULL," .
+         		// FOREIGN KEY for user_id -> kc_users(id)
+         		"INDEX usr_id (user_id)," .
+                "FOREIGN KEY (user_id) REFERENCES " . $dbprefix . "users(id)" .
                 "ON DELETE CASCADE," .
-                // FOREIGN KEY for post_id -> kc_users(id)
+                // FOREIGN KEY for track_id -> kc_track(id)
+         		"INDEX trk_id (track_id)," .
+                "FOREIGN KEY (track_id) REFERENCES " . $dbprefix . "track(id)" .
+                "ON DELETE CASCADE," .
+                // FOREIGN KEY for post_id -> kc_post(id)
          		"INDEX pst_id (post_id)," .
-                "FOREIGN KEY (post_id) REFERENCES " . $dbprefix . "posts(id)" .
-                "ON DELETE CASCADE," .
-                // FOREIGN KEY for page_id -> kc_users(id)
-         		"INDEX pge_id (page_id)," .
-                "FOREIGN KEY (page_id) REFERENCES " . $dbprefix . "pages(id)" .
+                "FOREIGN KEY (post_id) REFERENCES " . $dbprefix . "post(id)" .
                 "ON DELETE CASCADE" .
        		");";
        		

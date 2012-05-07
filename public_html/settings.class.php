@@ -1,5 +1,4 @@
 <?php
-
 class settings {
 	private static $filename;
 
@@ -40,8 +39,8 @@ class settings {
 	private function readFile() {
 		$xml = simplexml_load_file(self::$filename);
 
-		self::$name = utf8_decode($xml -> settings -> name);
-		self::$tagline = utf8_decode($xml -> settings -> tagline);
+		self::$name = utf8_decode($xml -> name);
+		self::$tagline = utf8_decode($xml -> tagline);
 		self::$dbhost = utf8_decode($xml -> database -> host);
 		self::$dbuser = utf8_decode($xml -> database -> user);
 		self::$dbpw = utf8_decode($xml -> database -> password);
@@ -49,6 +48,14 @@ class settings {
 		self::$dbprefix = utf8_decode($xml -> database -> prefix);
 	}
 
+	public static function getName() {
+		return self::$name;
+	}
+
+	public static function getTagline() {
+		return self::$tagline;
+	}
+	
 	public static function getDatabase() {
 		return self::$database;
 	}
