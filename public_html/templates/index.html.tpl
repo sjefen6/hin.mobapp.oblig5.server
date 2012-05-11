@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>{$title}</title>
-<link rel="stylesheet" type="text/css" href="browser.css" />
+{css_tag file="browser.css"}
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
@@ -14,19 +14,19 @@
 		</hgroup>
 	</header>
 	<nav>
-{foreach from=$menu item=i}
-		<a href="{$i.url}">{$i.name}</a>
-{/foreach}
-	</nav>	
-	
-{if $signedIn}
-	<nav>
-		<a href="?admin=addPost">Add Post</a>
-		<a href="?admin=addPage">Add Page</a>
+		<a href="/">Tracks</a>
+		<a href="/?mode=users">Users</a>
 	</nav>
-{/if}
 	
+	<div id="content">
+	{block name="errors"}{if isset($error) and count($error) != 0}
+		<div id="errors">
+			<h1>{$error}</h1>
+		</div>{/if}
+	{/block}
+	{block name="content"}{/block}
 	
+{* 	
 {if $mode eq 'bloglist'}
 	<div id="articles">
 		{foreach from=$articles item=article}
@@ -146,6 +146,7 @@
 		</article>
 	</div>
 {/if}
+
 <div id="rightbar">
 	<h2>PLACEHOLDER ARCHIVE</h2>
 	<div id="login">
@@ -166,6 +167,7 @@
 		{/if}
 	</div>	
 </div>
+*}
 <footer><p>Alle rettigheter &copy; Vegard Lang&aring;s, Lena Silseth og Daniel Razafimandimby.<br>Mer info om cms-et p&aring; <a href="https://github.com/sjefen6/webapp-blogg" target="_blank">github</a></p></footer>
 </section>
 </body>

@@ -51,17 +51,17 @@ if (!file_exists($settingsFile)) {
 			"CREATE TABLE " . $dbprefix . "tracks (" .
          		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"name VARCHAR(100) NOT NULL," .
-         		"creator_user_id INT NOT NULL COMMENT 'The creator of the track'," .
-         		"winner_user_id INT NULL COMMENT 'The first to complete the track'," .
+         		"creator INT NOT NULL COMMENT 'The user_id og the creator of the track'," .
+         		"winner INT NULL COMMENT 'The user_id og the first to complete the track'," .
          		"start_ts BIGINT(12) NOT NULL," .
          		"stop_ts BIGINT(12) NOT NULL," .
-         		// FOREIGN KEY for creator_user_id -> kc_users(id)
-         		"INDEX cre_id (creator_user_id)," .
-                "FOREIGN KEY (creator_user_id) REFERENCES " . $dbprefix . "users(id)" .
+         		// FOREIGN KEY for creator -> kc_users(id)
+         		"INDEX cre_id (creator)," .
+                "FOREIGN KEY (creator) REFERENCES " . $dbprefix . "users(id)" .
                 "ON DELETE CASCADE," .
                 // FOREIGN KEY for winner_user_id -> kc_users(id)
-         		"INDEX win_id (winner_user_id)," .
-                "FOREIGN KEY (winner_user_id) REFERENCES " . $dbprefix . "users(id)" .
+         		"INDEX win_id (winner)," .
+                "FOREIGN KEY (winner) REFERENCES " . $dbprefix . "users(id)" .
                 "ON DELETE CASCADE" .
        		");";
 			

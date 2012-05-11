@@ -7,17 +7,16 @@ header('Content-Type: text/html; charset=utf-8');
 date_default_timezone_set("Europe/Berlin");
 
 require('libs/Smarty.class.php');
-require('menu.class.php');
-require('pageHandler.class.php');
-require('postHandler.class.php');
+//require('pageHandler.class.php');
+//require('postHandler.class.php');
 require('userHandler.class.php');
 require('settings.class.php');
 
 $settings = new settings("../settings.xml");
 $smarty = new Smarty;
 
-// $smarty->force_compile = true;
-// $smarty->debugging = true;
+//$smarty->force_compile = true;
+//$smarty->debugging = true;
 //$smarty->caching = false;
 //$smarty->cache_lifetime = 120;
 $smarty->assign("mode","default");
@@ -27,21 +26,6 @@ $smarty->assign("mode","default");
 */
 $smarty->assign("title","Dette er overskriften",true);
 $smarty->assign("subtitle","Dette er under-overskriften",true);
-
-/*
- * Opprett Menyen
-*/
-$menu = new menu();
-$menu->addItem(new menuItem("/", "Home"));
-
-/*
- * Les inn alle sidene slik at vi kan generere menyen
-*/
-$posts = new postHandler("../blogg.xml");
-$pages = new pageHandler("../pages.xml");
-$menu = $pages->addToMenu($menu);
-
-$smarty->assign('menu',$menu->getMenuArray());
 
 /*
  * Login subutine
