@@ -4,7 +4,10 @@ class trackHandler{
 
 	function __construct($settings) {
 		$sql = "SELECT * FROM " . settings::getDbPrefix(). "tracks";
-		$stmt = settings::getDatabase() -> query($sql);
+		
+		$stmt = settings::getDatabase() -> prepare($sql);
+		$stmt->execute();
+		
 		$this -> trackArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'track');
 	}
 
@@ -17,7 +20,7 @@ class trackHandler{
 		return false;
 	}
 
-	public function getPosts($from, $to, $users){
+	public function getTracks($from, $to, $users){
 		$returnArray = array();
 
 		if ($from > $to){
@@ -64,7 +67,7 @@ class track{
 	}
 
 	public function getId(){
-		return $this->url_id;
+		return $this->id;
 	}
 
 	public function getName(){
@@ -80,19 +83,18 @@ class track{
 	}
 	
 	public function getStop_TS(){
-		return $this->author_id;
+		return $this->stop_ts;
 	}
 	
 	public function getSmarty($users){
-		$user = $users->getUserById($this->author_id);
-		return array('id' => $this -> getId(),
-					'url_id' => $this -> url_id,
-					'title' => $this->title,
-					'time' => date("r", $this->time),
-					'content' => $this->content,
-					'author' => $user->getFirstname() . " " . $user->getLastname(),
-					'no_comments' => count($comments->getCommentsForPost($this -> id, $users)),
-					'comments' => $comments->getCommentsForPost($this -> getId(), $users));
+		$creatorUserName = $users->getUserById($this->creator).getUsername();
+		$winnerUserName = $users->getUserById($this->winner).getUsername();
+		return array('id' => $this -> id,
+					'name' => $this -> name,
+					'creator' => $creatorUserName,
+					'winner' => $winnerUserName,
+					'start_ts' => $this->start_ts,
+					'stop_ts' => $this->stop_ts);
 	}
 	
 	private function save($new = false){
@@ -106,23 +108,20 @@ class track{
         	"WHERE id=:id";
 		}
 		
-		/*** fetch into an PDOStatement object ***/
 		$stmt = settings::getDatabase()->prepare($sql);
 
-		/*** fetch into the animals class ***/
 		if ($new){
-			$stmt -> execute(array(':title'=>$this -> title,
-								':url_id'=>$this -> url_id,
-								':time'=>$this -> time,
-								':author_id'=>$this -> author_id,
-								':content'=>$this -> content));
+			$stmt -> execute(array(':name'=>$this -> name,
+								':creator'=>$this -> creator,
+								':start_ts'=>$this -> start_ts,
+								':stop_ts'=>$this -> stop_ts));
 		} else {
-			$stmt -> execute(array(':id'=>$this -> id,
-								':title'=>$this -> title,
-								':url_id'=>$this -> url_id,
-								':time'=>$this -> time,
-								':author_id'=>$this -> author_id,
-								':content'=>$this -> content));
+			$stmt -> execute(array(':name'=>$this -> name,
+								':creator'=>$this -> creator,
+								':winner'=>$this -> winner,
+								':start_ts'=>$this -> start_ts,
+								':stop_ts'=>$this -> stop_ts,
+								':id'=>$this -> id));
 		}
 	}
 }

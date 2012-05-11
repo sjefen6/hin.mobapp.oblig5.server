@@ -3,20 +3,11 @@ class userHandler {
 	private $userArray;
 
 	function __construct() {
-		/*
-		 * SQL Query 
-		 */
 		$sql = "SELECT * FROM " . settings::getDbPrefix() . "users";
 
-		/*
-		 * Prepare and execute the sql query 
-		 */
 		$stmt = settings::getDatabase() -> prepare($sql);
 		$stmt->execute();
 
-		/*
-		 * Fetch into the userArray 
-		 */
 		$this -> userArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'user');
 	}
 	
@@ -45,7 +36,6 @@ class userHandler {
 				return $user;
 			}
 		}
-		
 		return null;
 	}
 	
@@ -59,13 +49,9 @@ class userHandler {
 	
 	private function getUser($username){
 		foreach ($this->userArray as $user) {
-
 			if ($user -> getUsername() == $username) {
-
 				return $user;
-
 			}
-
 		}
 		return null;
 	}
@@ -79,10 +65,10 @@ class userHandler {
 		return null;
 	}
 
-	public function addUser($username, $email, $firstname, $lastname, $password, $userlevel, $usermode) {
+	public function addUser($username, $email, $password, $userlevel, $usermode) {
 			if ($_POST["confirmPassword"] === $password){
 				if ($this -> getUser($_POST["userName"]) == NULL){
-					$this -> userArray[] = new user($username, $email, $firstname, $lastname, $password, $userlevel, $usermode);
+					$this -> userArray[] = new user($username, $email, $password, $userlevel, $usermode);
 					return true;
 				}
 			}
@@ -100,8 +86,6 @@ class user {
 	private $id;
 	private $username;
 	private $email;
-	private $firstname;
-	private $lastname;
 	private $password;
 	private $salt;
 	private $validationkey;
@@ -109,17 +93,15 @@ class user {
 	private $usermode;
 	private $userlevel;
 
-	function __construct($username = null, $email = null, $firstname = null, $lastname = null, $password = null, $userlevel = null, $usermode = null) {
-		if ($username != null || $email != null || $firstname != null || $lastname != null || $password != null || $userlevel != null || $usermode != null) {
-			// Lets fill thows fields that needs some random stuff
-			$this -> salt = $this -> random_gen(30);
+	function __construct($username = null, $email = null, $password = null, $userlevel = null, $usermode = null) {
+		if ($username != null || $email != null || $password != null || $userlevel != null || $usermode != null) {
+			// Lets fill the fields that needs some random stuff
+			$this -> salt = $this -> random_gen(30); // This is just to make sure salt never is null or something
 			$this -> session_cookie = $this -> random_gen(30);
 			$this -> validationkey = $this -> random_gen(30);
 
 			$this -> username = $username;
 			$this -> email = $email;
-			$this -> firstname = $firstname;
-			$this -> lastname = $lastname;
 			$this -> setPassword($password);
 			$this -> userlevel = $userlevel;
 			$this -> usermode = $usermode;
@@ -131,9 +113,7 @@ class user {
 	}
 
 	public function getUserlevel() {
-
 		return $this -> userlevel;
-
 	}
 	
 	public function getEmail() {
@@ -145,17 +125,7 @@ class user {
 	}
 	
 	public function getId() {
-
 		return $this -> id;
-
-	}
-	
-	public function getFirstname(){
-		return $this -> firstname;
-	}
-	
-	public function getLastname(){
-		return $this -> lastname;
 	}
 	
 	public function getUsername() {
@@ -163,6 +133,7 @@ class user {
 	}
 
 	private function setPassword($password) {
+		$this -> salt = $this -> random_gen(30);
 		$this -> password = sha1($password . $this -> salt);
 	}
 
@@ -210,7 +181,7 @@ class user {
 	}
 	
 	public function sendNewPassword($email){
-		// This is a sorce for exploitation if the admin has not edited his user and set his email
+		// This is a source for exploitation if the admin has not edited his user and set his email
 		if ($this->email == $email || $this->email == NULL){
 			$password = $this->random_gen(8);
 			$subject = "New password for kc blogg";
@@ -247,21 +218,18 @@ class user {
 	}
 
 	private function save($new = false) {
-		/*** The SQL SELECT statement ***/
 		if ($new) {
 			$sql = "INSERT INTO " . settings::getDbPrefix() . "users " .
-			"(username, email, firstname, lastname, " .
-			"password, salt, validationkey, session_cookie, " .
+			"(username, email, password, " .
+			"salt, validationkey, session_cookie, " .
 			"usermode, userlevel) " .
-			"VALUES (:username, :email, :firstname, :lastname, " .
-			":password, :salt, :validationkey, :session_cookie, " .
+			"VALUES (:username, :email, :password, " .
+			":salt, :validationkey, :session_cookie, " .
 			":usermode, :userlevel);";
 		} else {
 			$sql = "UPDATE " . settings::getDbPrefix() . "users " .
 			"SET username = :username, " .
 			"email = :email, " .
-			"firstname = :firstname, " .
-			"lastname = :lastname, " .
 			"password = :password, " .
 			"salt = :salt, " .
 			"validationkey = :validationkey, " .
@@ -271,15 +239,11 @@ class user {
 			"WHERE id = :id";
 		}
 
-		/*** fetch into an PDOStatement object ***/
 		$stmt = settings::getDatabase() -> prepare($sql);
 
-		/*** run the query ***/
 		if ($new) {
 			$stmt -> execute(array(':username' => $this -> username,
 					':email' => $this -> email,
-					':firstname' => $this -> firstname,
-					':lastname' => $this -> lastname,
 					':password' => $this -> password,
 					':salt' => $this -> salt,
 					':validationkey' => $this -> validationkey,
@@ -289,8 +253,6 @@ class user {
 		} else {
 			$stmt -> execute(array(':username' => $this -> username,
 					':email' => $this -> email,
-					':firstname' => $this -> firstname,
-					':lastname' => $this -> lastname,
 					':password' => $this -> password,
 					':salt' => $this -> salt,
 					':validationkey' => $this -> validationkey,
@@ -300,6 +262,5 @@ class user {
 					':id' => $this -> id));
 		}
 	}
-
 }
 ?>

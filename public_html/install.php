@@ -37,8 +37,6 @@ if (!file_exists($settingsFile)) {
          		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"username VARCHAR(100) NOT NULL," .
          		"email VARCHAR(200)," .
-         		"firstname VARCHAR(100)," .
-         		"lastname VARCHAR(100)," .
          		"password VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"salt VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"validationkey VARCHAR(100) NOT NULL," .
