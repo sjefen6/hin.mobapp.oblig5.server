@@ -67,10 +67,10 @@ if (!file_exists($settingsFile)) {
 			"CREATE TABLE " . $dbprefix . "posts (" .
 				"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"track_id INT NOT NULL," .
-         		"post_numer VARCHAR(100) NOT NULL," .
-         		"radius VARCHAR(100) NOT NULL," .
-         		"longitude BIGINT(12) NOT NULL," .
-         		"latitude INT NOT NULL," .
+         		"post_number INT NOT NULL," .
+         		"radius INT NOT NULL," .
+         		"longitude DOUBLE PRECISION(9,6) NOT NULL," .
+         		"latitude DOUBLE PRECISION(9,6) NOT NULL," .
          		"clue TEXT," .
          		// FOREIGN KEY for track_id -> kc_track(id)
          		"INDEX trk_id (track_id)," .

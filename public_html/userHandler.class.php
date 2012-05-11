@@ -11,32 +11,35 @@ class userHandler {
 		$this -> userArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'user');
 	}
 	
-	public function getCurrentUser(){
-		if (isset($_GET["login"])) {
-			if ($_GET["login"] == "out"){
-				$this -> logout();
+	public function validate($username, $validationkey){
+		if (!isset($username) && !isset($validationkey)){
+			$user = $this -> getUser($username);
+			if ($user != null && $user -> getUsermode() >= -1 && $user -> verifyValidationkey($validationkey)){
+				return true;
 			}
-		} else if (isset($_GET["user"]) && isset($_GET["vkey"])){
-			$user = $this -> getUser($_GET["user"]);
-			if ($user != null && $user -> getUsermode() >= -1 && $user -> verifyValidationkey($_GET["vkey"])){
-				return $user;
-			} else {
-				return "failed";
-			}
-		} else if (isset($_POST["username"])){
-			$user = $this -> getUser($_POST["username"]);
-			if ($user != null && $user -> getUsermode() <= 1 && $user -> verifyPasword($_POST["password"])){
-				return $user;
-			} else {
-				return "failed";
-			}
-		} else if (isset($_COOKIE["username"])){
-			$user = $this -> getUser($_COOKIE["username"]);
-			if ($user != null && $user -> verifySessionCookie($_COOKIE["session_cookie"])){
+		}
+		return false;
+	}
+	
+	public function login($username, $password, $sessionkey){
+		$user = $this -> getUser($username);
+		if ($user != null && $user -> getUsermode() <= 1){
+			if ($user -> verifyPasword($password) || $user -> verifySessionCookie($sessionkey)){
 				return $user;
 			}
 		}
 		return null;
+	}
+	
+	public function logout($username, $password, $sessionkey){
+		$user = $this -> getUser($username);
+		if ($user != null && $user -> getUsermode() <= 1){
+			if ($user -> verifyPasword($password) || $user -> verifySessionCookie($sessionkey)){
+				$user -> logout();
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public function lostpw($username, $email){
@@ -74,12 +77,6 @@ class userHandler {
 			}
 		return false;
 	}
-
-	public function logout() {
-		setcookie("username", "", time() + 1);
-		setcookie("session_cookie", "", time() + 1);
-	}
-
 }
 
 class user {
@@ -89,15 +86,14 @@ class user {
 	private $password;
 	private $salt;
 	private $validationkey;
-	private $session_cookie;
+	private $sessionkey;
 	private $usermode;
 	private $userlevel;
 
 	function __construct($username = null, $email = null, $password = null, $userlevel = null, $usermode = null) {
 		if ($username != null || $email != null || $password != null || $userlevel != null || $usermode != null) {
 			// Lets fill the fields that needs some random stuff
-			$this -> salt = $this -> random_gen(30); // This is just to make sure salt never is null or something
-			$this -> session_cookie = $this -> random_gen(30);
+			$this -> sessionkey = $this -> random_gen(30);
 			$this -> validationkey = $this -> random_gen(30);
 
 			$this -> username = $username;
@@ -106,22 +102,12 @@ class user {
 			$this -> userlevel = $userlevel;
 			$this -> usermode = $usermode;
 			
-			$this->sendRegisterValidation();
+			if ($this -> usermode <= -1){
+				$this->sendRegisterValidation();
+			}
 
 			$this -> save(true);
 		}
-	}
-
-	public function getUserlevel() {
-		return $this -> userlevel;
-	}
-	
-	public function getEmail() {
-		return $this -> email;
-	}
-	
-	public function getUsermode() {
-		return $this -> usermode;
 	}
 	
 	public function getId() {
@@ -131,18 +117,34 @@ class user {
 	public function getUsername() {
 		return $this -> username;
 	}
+	
+	public function getEmail() {
+		return $this -> email;
+	}
+
+	public function getUserlevel() {
+		return $this -> userlevel;
+	}
+	
+	public function getUsermode() {
+		return $this -> usermode;
+	}
 
 	private function setPassword($password) {
 		$this -> salt = $this -> random_gen(30);
 		$this -> password = sha1($password . $this -> salt);
 	}
+	
+	private function resetSessionKey(){
+		$this -> sessionkey = $this -> random_gen(30);
+		$this -> save();
+	}
 
 	public function verifyPasword($password) {
 		if ($this -> password === sha1($password . $this -> salt)) {
-			$this -> session_cookie = $this -> random_gen(30);
-			$this -> save();
+			$this -> resetSessionKey();
 			setcookie("username", $this -> username);
-			setcookie("session_cookie", $this -> session_cookie);
+			setcookie("sessionkey", $this -> sessionkey);
 			return true;
 		}
 		return false;
@@ -153,21 +155,28 @@ class user {
 			if ($this -> usermode < 0) {
 				$this -> usermode = 1;
 				$this -> save();
+				return true;
 			}
 		}
 		return false;
 	}
 
-	public function verifySessionCookie($session_cookie) {
-		if ($this -> session_cookie === $session_cookie) {
+	public function verifySessionCookie($sessionkey) {
+		if ($this -> sessionkey === $sessionkey) {
 			return true;
 		}
 		return false;
 	}
 	
+	public function logout(){
+		$this -> resetSessionKey();
+		setcookie("username");
+		setcookie("sessionkey");
+	}
+	
 	private function sendRegisterValidation(){
 		$to  = $this->email;
-		$url = $_SERVER['HTTP_HOST']."/?user=" . $this -> username . "&vkey=" . $this->validationkey;
+		$url = $_SERVER['HTTP_HOST']."/?username=" . $this -> username . "&validationkey=" . $this->validationkey;
 		
 		$subject = "E-post validering kc blogg";
 		

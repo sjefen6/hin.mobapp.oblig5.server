@@ -1,48 +1,59 @@
 <?php
-/*
- * Oblig 1
-* @package Example-application
-*/
 header('Content-Type: text/xml; charset=utf-8');
 date_default_timezone_set("Europe/Berlin");
 
 require 'libs/Smarty.class.php';
 require 'settings.class.php';
 require 'trackhandler.class.php';
+require 'userhandler.class.php';
 
 $smarty = new Smarty;
 $settings = new settings("../settings.xml");
 
-// $smarty->force_compile = true;
-// $smarty->debugging = true;
+//$smarty->force_compile = true;
+//$smarty->debugging = true;
 //$smarty->caching = false;
 //$smarty->cache_lifetime = 120;
 $smarty->assign("mode","default");
 
 /*
+ * Inputs
+ */
+$user = $password = $sessionkey = $validationkey = $action = null;
+// Username
+if (isset($_REQUEST["username"])){
+	$user = $_REQUEST["username"];
+}
+// Password
+if (isset($_REQUEST["password"])){
+	$password = $_REQUEST["password"];
+}
+// Sessionkey
+if (isset($_REQUEST["sessionkey"])){
+	$sessionkey = $_REQUEST["sessionkey"];
+}
+// Validationkey
+if (isset($_REQUEST["validationkey"])){
+	$validationkey = $_REQUEST["validationkey"];
+}
+// Action
+if (isset($_REQUEST["action"])){
+	$action = $_REQUEST["action"];
+}
+
+/*
  * Login subutine
 */
-$admin = false;
-$failed = false;
-$users = new userHandler("../users.xml");
+$users = new userHandler();
+$validation = validate($user, $validationkey);
+$user = $users -> login($user, $password, $sessionkey);
 
-if ($users -> verifySession()){
-	$admin = true;
+/*
+ * Logout subrutine
+ */
+if ($action = "logout"){
+	$users -> logout($user, $password, $sessionkey);
 }
-
-if (isset($_GET["login"])){
-	if ($_GET["login"] == "in"){
-		$admin = $users->verifyLogin($_POST["userId"], $_POST["password"]);
-		if (!$admin){
-			$failed =  true;
-		}
-	} else {
-		$users -> logout();
-		$admin = false;
-	}
-}
-$smarty->assign("failed", $failed);
-$smarty->assign("signedIn", $admin);
 
 /*
  * Send user data to smarty
