@@ -228,10 +228,10 @@ class user {
 		if ($new) {
 			$sql = "INSERT INTO " . settings::getDbPrefix() . "users " .
 			"(username, email, password, " .
-			"salt, validationkey, session_cookie, " .
+			"salt, validationkey, sessionkey, " .
 			"usermode, userlevel) " .
 			"VALUES (:username, :email, :password, " .
-			":salt, :validationkey, :session_cookie, " .
+			":salt, :validationkey, :sessionkey, " .
 			":usermode, :userlevel);";
 		} else {
 			$sql = "UPDATE " . settings::getDbPrefix() . "users " .
@@ -240,7 +240,7 @@ class user {
 			"password = :password, " .
 			"salt = :salt, " .
 			"validationkey = :validationkey, " .
-			"session_cookie = :session_cookie, " .
+			"sessionkey = :sessionkey, " .
 			"usermode = :usermode, " .
 			"userlevel = :userlevel " .
 			"WHERE id = :id";
@@ -254,7 +254,7 @@ class user {
 					':password' => $this -> password,
 					':salt' => $this -> salt,
 					':validationkey' => $this -> validationkey,
-					':session_cookie' => $this -> session_cookie,
+					':sessionkey' => $this -> sessionkey,
 					':usermode' => $this -> usermode,
 					':userlevel' => $this -> userlevel));
 		} else {
@@ -263,7 +263,7 @@ class user {
 					':password' => $this -> password,
 					':salt' => $this -> salt,
 					':validationkey' => $this -> validationkey,
-					':session_cookie' => $this -> session_cookie,
+					':sessionkey' => $this -> sessionkey,
 					':usermode' => $this -> usermode,
 					':userlevel' => $this -> userlevel,
 					':id' => $this -> id));

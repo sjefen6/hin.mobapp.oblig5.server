@@ -10,16 +10,14 @@ class settings {
 
 	private static $database;
 
-	function __construct($filename_, $name_=null, $tagline_=null, $dbhost_=null, $dbuser_=null, $dbpw_=null, $dbname_=null, $dbprefix_=null) {
+	function __construct($filename_, $dbhost_=null, $dbuser_=null, $dbpw_=null, $dbname_=null, $dbprefix_=null) {
 		
 		self::$filename = $filename_;
 		
 		if (!file_exists(self::$filename)) {
-			if ($name_ == NULL || $tagline_ == NULL || $dbhost_ == null || $dbuser_ == null || $dbpw_ == null || $dbname_ == null || $dbprefix_ == null){
+			if ($dbhost_ == null || $dbuser_ == null || $dbpw_ == null || $dbname_ == null || $dbprefix_ == null){
 				die("Something is wrong, time to quit!");
 			}
-			self::$name = $name_;
-			self::$tagline = $tagline_;
 			self::$dbhost = $dbhost_;
 			self::$dbuser = $dbuser_;
 			self::$dbpw = $dbpw_;
@@ -43,15 +41,7 @@ class settings {
 		self::$dbname = utf8_decode($xml -> database -> name);
 		self::$dbprefix = utf8_decode($xml -> database -> prefix);
 	}
-
-	public static function getName() {
-		return self::$name;
-	}
-
-	public static function getTagline() {
-		return self::$tagline;
-	}
-	
+		
 	public static function getDatabase() {
 		return self::$database;
 	}

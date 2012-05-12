@@ -67,7 +67,8 @@ $smarty->assign("user", $user);
 
 switch ($target) {
     case "tracks":
-        $trackhandler = new trackhandler();
+        $tracks = new trackhandler();
+        $smarty->assign("tracks", $tracks -> getAllSmarty($users));
 		$smarty->display('tracks.xml.tpl');
         break;
     case 1:
@@ -82,7 +83,7 @@ exit;
 if (isset($_GET["list"])) {
 	
 	if ($_GET["list"] == "tracks"){
-		$smarty->assign("tracks", $tracks -> listAll());
+		$smarty->assign("tracks", $tracks -> getAllSmarty($users));
 		$smarty->display('tracks.tpl');
 	}
 	

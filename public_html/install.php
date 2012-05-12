@@ -6,9 +6,9 @@ if (!file_exists($settingsFile)) {
 	require ('libs/Smarty.class.php');
 	$smarty = new Smarty;
 	
-	$user = $_POST["user"];
+	$username = $_POST["user"];
 	$password = $_POST["pw"];
-	$mail = $_POST["mail"];
+	$email = $_POST["mail"];
 	$dbhost = $_POST["dbhost"];
 	$dbname = $_POST["dbname"];
 	$dbuser = $_POST["dbuser"];
@@ -16,15 +16,15 @@ if (!file_exists($settingsFile)) {
 	$dbprefix = $_POST["dbprefix"];
 
 	
-	$all = isset($user,$pw,$mail,$dbhost,$dbname,$dbuser,$dbpw,$dbprefix);
+	$all = isset($username,$password,$email,$dbhost,$dbname,$dbuser,$dbpw,$dbprefix);
 		
-	$oneOrMore = isset($user) || isset($password) || isset($mail) ||
+	$oneOrMore = isset($username) || isset($password) || isset($email) ||
 		isset($dbhost) || isset($dbname) || isset($dbuser) || isset($dbpw) ||
 		isset($dbprefix);
 	
 	if ($all) {
 			require 'settings.class.php';
-			$settings = new settings($settingsFile, $_POST["blogname"], $_POST["tagline"], $_POST["dbhost"], $_POST["dbuser"], $_POST["dbpw"], $_POST["dbname"], $_POST["dbprefix"]);
+			$settings = new settings($settingsFile, $dbhost, $dbuser, $dbpw, $dbname, $dbprefix);
 			
 			// I don't see the point in cleaning input at this stage.
 			// If an attacker is able to use this script he can make hell without exploiting injections.
@@ -38,7 +38,7 @@ if (!file_exists($settingsFile)) {
          		"password VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"salt VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"validationkey VARCHAR(100) NOT NULL," .
-         		"session_cookie VARCHAR(100) NOT NULL," .
+         		"sessionkey VARCHAR(100) NOT NULL," .
          		"usermode TINYINT NOT NULL," . // -1 = not validated, 0 = disabeled, 1 = active
          		"userlevel TINYINT NOT NULL" .
        		");";
@@ -108,7 +108,7 @@ if (!file_exists($settingsFile)) {
 			$users = new userHandler();
 			$users -> addUser($username, $email, $password, 0, 1);
 			
-			$smarty->assign("message","<pre>$createUsers\n$createPosts\n$createPages\n$createComments</pre>");
+			$smarty->assign("message","<pre>$create_users\n$create_tracks\n$create_posts\n$create_visited_posts</pre>");
 
 	} else 	if ($oneOrMore) {
 			$smarty->assign("message","Fill ALL fields (and get a html5 compadible browser)!");

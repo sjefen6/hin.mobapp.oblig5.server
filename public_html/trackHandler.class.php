@@ -20,24 +20,11 @@ class trackHandler{
 		return false;
 	}
 
-	public function getTracks($from, $to, $users){
+	public function getAllSmarty($users){
 		$returnArray = array();
 
-		if ($from > $to){
-			return false;
-		}
-		$counter = 0;
 		foreach ($this->trackArray as $track) {
-			if ($counter < $from){
-				// We are not yet at $from
-				;
-			} else if ($counter > $to) {
-				// We have passed $to
-				return $returnArray;
-			} else {
-				$returnArray[] = $track->getSmarty($users);
-			}
-			$counter++;
+			$returnArray[] = $track->getSmarty($users);
 		}
 		return $returnArray;
 	}
@@ -87,8 +74,12 @@ class track{
 	}
 	
 	public function getSmarty($users){
-		$creatorUserName = $users->getUserById($this->creator).getUsername();
-		$winnerUserName = $users->getUserById($this->winner).getUsername();
+		$creatorUserName = $users->getUserById($this->creator) -> getUsername();
+		if (isset($this->winner)){
+			$winnerUserName = $users->getUserById($this->winner) -> getUsername();
+		} else {
+			$winnerUserName = "";
+		}
 		return array('id' => $this -> id,
 					'name' => $this -> name,
 					'creator' => $creatorUserName,
