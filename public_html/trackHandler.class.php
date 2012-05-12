@@ -2,7 +2,7 @@
 class trackHandler{
 	private $trackArray;
 
-	function __construct($settings) {
+	function __construct() {
 		$sql = "SELECT * FROM " . settings::getDbPrefix(). "tracks";
 		
 		$stmt = settings::getDatabase() -> prepare($sql);

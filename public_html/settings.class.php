@@ -1,9 +1,7 @@
 <?php
 class settings {
 	private static $filename;
-
-	private static $name;
-	private static $tagline;
+	
 	private static $dbhost;
 	private static $dbuser;
 	private static $dbpw;
@@ -39,8 +37,6 @@ class settings {
 	private function readFile() {
 		$xml = simplexml_load_file(self::$filename);
 
-		self::$name = utf8_decode($xml -> name);
-		self::$tagline = utf8_decode($xml -> tagline);
 		self::$dbhost = utf8_decode($xml -> database -> host);
 		self::$dbuser = utf8_decode($xml -> database -> user);
 		self::$dbpw = utf8_decode($xml -> database -> password);
@@ -67,8 +63,6 @@ class settings {
 	private function createSettings() {
 		if (!file_exists(self::$filename)) {
 		$xml_ny = "<settings>\n" . 
-			"\t<name>" . self::$name . "</name>\n" .
-			"\t<tagline>" . self::$tagline . "</tagline>\n" .
 			"\t<database>\n" .
 				"\t\t<host>" . self::$dbhost . "</host>\n" .
 				"\t\t<user>" . self::$dbuser . "</user>\n" .

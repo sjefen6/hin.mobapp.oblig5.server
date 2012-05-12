@@ -69,12 +69,10 @@ class userHandler {
 	}
 
 	public function addUser($username, $email, $password, $userlevel, $usermode) {
-			if ($_POST["confirmPassword"] === $password){
-				if ($this -> getUser($_POST["userName"]) == NULL){
-					$this -> userArray[] = new user($username, $email, $password, $userlevel, $usermode);
-					return true;
-				}
-			}
+		if ($this -> getUser($username) == NULL){
+			$this -> userArray[] = new user($username, $email, $password, $userlevel, $usermode);
+			return true;
+		}
 		return false;
 	}
 }

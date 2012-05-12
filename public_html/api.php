@@ -4,8 +4,8 @@ date_default_timezone_set("Europe/Berlin");
 
 require 'libs/Smarty.class.php';
 require 'settings.class.php';
-require 'trackhandler.class.php';
-require 'userhandler.class.php';
+require 'trackHandler.class.php';
+require 'userHandler.class.php';
 
 $smarty = new Smarty;
 $settings = new settings("../settings.xml");
@@ -19,7 +19,7 @@ $smarty->assign("mode","default");
 /*
  * Inputs
  */
-$user = $password = $sessionkey = $validationkey = $action = null;
+$user = $password = $sessionkey = $validationkey = $action = $target = null;
 // Username
 if (isset($_REQUEST["username"])){
 	$user = $_REQUEST["username"];
@@ -40,29 +40,45 @@ if (isset($_REQUEST["validationkey"])){
 if (isset($_REQUEST["action"])){
 	$action = $_REQUEST["action"];
 }
+// Target
+if (isset($_REQUEST["target"])){
+	$target = $_REQUEST["target"];
+}
+
+/*
+ * Logout subrutine
+ * This comes before the login subrutine so that the user is logged out when the credetials are validated
+ */
+$users = new userHandler();
+if ($action = "logout"){
+	$users -> logout($username, $password, $sessionkey);
+}
 
 /*
  * Login subutine
 */
-$users = new userHandler();
-$validation = validate($user, $validationkey);
-$user = $users -> login($user, $password, $sessionkey);
-
-/*
- * Logout subrutine
- */
-if ($action = "logout"){
-	$users -> logout($user, $password, $sessionkey);
-}
-
-/*
- * Send user data to smarty
- */
-$smarty->assign("tracks", $user -> getCurrent());
+$validation = $users -> validate($username, $validationkey); // E-mail validation
+$user = $users -> login($username, $password, $sessionkey);
+$smarty->assign("user", $user);
 
 /*
  * Main content switch
 */
+
+switch ($target) {
+    case "tracks":
+        $trackhandler = new trackhandler();
+		$smarty->display('tracks.xml.tpl');
+        break;
+    case 1:
+        echo "i equals 1";
+        break;
+    case 2:
+        echo "i equals 2";
+        break;
+}
+exit;
+
 if (isset($_GET["list"])) {
 	
 	if ($_GET["list"] == "tracks"){

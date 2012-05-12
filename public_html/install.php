@@ -1,19 +1,26 @@
 <?php
 $settingsFile = "../settings.xml";
+
 if (!file_exists($settingsFile)) {
 	header('Content-Type: text/html; charset=utf-8');
 	require ('libs/Smarty.class.php');
 	$smarty = new Smarty;
 	
-	$all = isset($_POST["user"]) && isset($_POST["pw"]) && isset($_POST["blogname"]) && isset($_POST["tagline"])
-		&& isset($_POST["dbhost"]) && isset($_POST["dbname"])
-		&& isset($_POST["dbuser"]) && isset($_POST["dbpw"])
-		&& isset($_POST["dbprefix"]);
+	$user = $_POST["user"];
+	$password = $_POST["pw"];
+	$mail = $_POST["mail"];
+	$dbhost = $_POST["dbhost"];
+	$dbname = $_POST["dbname"];
+	$dbuser = $_POST["dbuser"];
+	$dbpw = $_POST["dbpw"];
+	$dbprefix = $_POST["dbprefix"];
+
+	
+	$all = isset($user,$pw,$mail,$dbhost,$dbname,$dbuser,$dbpw,$dbprefix);
 		
-	$oneOrMore = isset($_POST["user"]) || isset($_POST["pw"]) || isset($_POST["blogname"]) || isset($_POST["tagline"])
-		|| isset($_POST["dbhost"]) || isset($_POST["dbname"])
-		|| isset($_POST["dbuser"]) || isset($_POST["dbpw"])
-		|| isset($_POST["dbprefix"]);
+	$oneOrMore = isset($user) || isset($password) || isset($mail) ||
+		isset($dbhost) || isset($dbname) || isset($dbuser) || isset($dbpw) ||
+		isset($dbprefix);
 	
 	if ($all) {
 			require 'settings.class.php';
@@ -22,21 +29,12 @@ if (!file_exists($settingsFile)) {
 			// I don't see the point in cleaning input at this stage.
 			// If an attacker is able to use this script he can make hell without exploiting injections.
 			
-			$user = $_POST["user"];
-			$pw = $_POST["pw"];
-			$blogname = $_POST["blogname"];
-			$tagline = $_POST["tagline"];
-			$dbhost = $_POST["dbhost"];
-			$dbname = $_POST["dbname"];
-			$dbuser = $_POST["dbuser"];
-			$dbpw = $_POST["dbpw"];
-			$dbprefix = $_POST["dbprefix"];
 			
 			$create_users = 
 			"CREATE TABLE " . $dbprefix . "users (" .
          		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"username VARCHAR(100) NOT NULL," .
-         		"email VARCHAR(200)," .
+         		"email VARCHAR(200) NOT NULL," .
          		"password VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"salt VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"validationkey VARCHAR(100) NOT NULL," .
@@ -101,15 +99,14 @@ if (!file_exists($settingsFile)) {
 			
        		$db = settings::getDatabase();
        		
-			$db -> exec($createUsers);
-			$db -> exec($createPosts);
-			$db -> exec($createPages);
-			$db -> exec($createComments);
+			$db -> exec($create_users);
+			$db -> exec($create_tracks);
+			$db -> exec($create_posts);
+			$db -> exec($create_visited_posts);
 			
-			//TODO: Add the user to the database!
 			require('userHandler.class.php');
 			$users = new userHandler();
-			$users -> addUser($user, "", "", "", $pw, 0, 1);
+			$users -> addUser($username, $email, $password, 0, 1);
 			
 			$smarty->assign("message","<pre>$createUsers\n$createPosts\n$createPages\n$createComments</pre>");
 
