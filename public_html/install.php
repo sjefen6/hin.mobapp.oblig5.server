@@ -40,66 +40,36 @@ if (!file_exists($settingsFile)) {
          		"validationkey VARCHAR(100) NOT NULL," .
          		"sessionkey VARCHAR(100) NOT NULL," .
          		"usermode TINYINT NOT NULL," . // -1 = not validated, 0 = disabeled, 1 = active
-         		"track_id INT NULL" .
+         		"track_id INT NULL" .  // tracks(id)
        		");";
 			
 			$create_tracks = 
 			"CREATE TABLE " . $dbprefix . "tracks (" .
          		"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"name VARCHAR(100) NOT NULL," .
-         		"creator INT NOT NULL COMMENT 'The user_id og the creator of the track'," .
-         		"winner INT NULL COMMENT 'The user_id og the first to complete the track'," .
+         		"creator INT NOT NULL COMMENT 'The user_id og the creator of the track'," . // users(id)
+         		"winner INT NULL COMMENT 'The user_id og the first to complete the track'," . // users(id)
          		"start_ts BIGINT(12) NOT NULL," .
-         		"stop_ts BIGINT(12) NOT NULL," .
-         		// FOREIGN KEY for creator -> kc_users(id)
-         		"INDEX cre_id (creator)," .
-                "FOREIGN KEY (creator) REFERENCES " . $dbprefix . "users(id)" .
-                "ON DELETE CASCADE," .
-                // FOREIGN KEY for winner_user_id -> kc_users(id)
-         		"INDEX win_id (winner)," .
-                "FOREIGN KEY (winner) REFERENCES " . $dbprefix . "users(id)" .
-                "ON DELETE CASCADE" .
-       		");" .
-       		"ALTER TABLE " . $dbprefix . "users (" .
-                // FOREIGN KEY for track_id -> kc_tracks(id)
-         		"INDEX trk_id (track_id)," .
-                "FOREIGN KEY (track_id) REFERENCES " . $dbprefix . "tracks(id)" .
-                "ON DELETE CASCADE" .
+         		"stop_ts BIGINT(12) NOT NULL" .
        		");";
 			
 			$create_posts = 
 			"CREATE TABLE " . $dbprefix . "posts (" .
 				"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
-         		"track_id INT NOT NULL," .
+         		"track_id INT NOT NULL," . // tracks(id)
          		"post_number INT NOT NULL," .
          		"radius INT NOT NULL," .
          		"longitude DOUBLE PRECISION(9,6) NOT NULL," .
          		"latitude DOUBLE PRECISION(9,6) NOT NULL," .
-         		"clue TEXT," .
-         		// FOREIGN KEY for track_id -> kc_track(id)
-         		"INDEX trk_id (track_id)," .
-                "FOREIGN KEY (track_id) REFERENCES " . $dbprefix . "track(id)" .
-                "ON DELETE CASCADE" .
+         		"clue TEXT" .
        		");";
 			
 			$create_visited_posts = 
 			"CREATE TABLE " . $dbprefix . "visited_posts (" .
-         		"user_id INT NOT NULL," .
-         		"track_id INT NOT NULL," .
-         		"post_id INT NOT NULL," .
-         		"ts BIGINT(12) NOT NULL," .
-         		// FOREIGN KEY for user_id -> kc_users(id)
-         		"INDEX usr_id (user_id)," .
-                "FOREIGN KEY (user_id) REFERENCES " . $dbprefix . "users(id)" .
-                "ON DELETE CASCADE," .
-                // FOREIGN KEY for track_id -> kc_track(id)
-         		"INDEX trk_id (track_id)," .
-                "FOREIGN KEY (track_id) REFERENCES " . $dbprefix . "track(id)" .
-                "ON DELETE CASCADE," .
-                // FOREIGN KEY for post_id -> kc_post(id)
-         		"INDEX pst_id (post_id)," .
-                "FOREIGN KEY (post_id) REFERENCES " . $dbprefix . "post(id)" .
-                "ON DELETE CASCADE" .
+         		"user_id INT NOT NULL," . // kc_users(id)
+         		"track_id INT NOT NULL," . // kc_track(id)
+         		"post_id INT NOT NULL," . // kc_post(id)
+         		"ts BIGINT(12) NOT NULL" .
        		");";
        		
 			
@@ -112,7 +82,7 @@ if (!file_exists($settingsFile)) {
 			
 			require('userHandler.class.php');
 			$users = new userHandler();
-			$users -> addUser($username, $email, $password, 0, 1);
+			$users -> addUser($username, $email, $password, 1);
 			
 			$smarty->assign("message","<pre>$create_users\n$create_tracks\n$create_posts\n$create_visited_posts</pre>");
 

@@ -68,9 +68,9 @@ class userHandler {
 		return null;
 	}
 
-	public function addUser($username, $email, $password, $userlevel, $usermode) {
+	public function addUser($username, $email, $password, $usermode) {
 		if ($this -> getUser($username) == NULL){
-			$this -> userArray[] = new user($username, $email, $password, $userlevel, $usermode);
+			$this -> userArray[] = new user($username, $email, $password, $usermode);
 			return true;
 		}
 		return false;
@@ -86,10 +86,10 @@ class user {
 	private $validationkey;
 	private $sessionkey;
 	private $usermode;
-	private $userlevel;
+	private $track_id;
 
-	function __construct($username = null, $email = null, $password = null, $userlevel = null, $usermode = null) {
-		if ($username != null || $email != null || $password != null || $userlevel != null || $usermode != null) {
+	function __construct($username = null, $email = null, $password = null, $usermode = null) {
+		if ($username != null || $email != null || $password != null || $usermode != null) {
 			// Lets fill the fields that needs some random stuff
 			$this -> sessionkey = $this -> random_gen(30);
 			$this -> validationkey = $this -> random_gen(30);
@@ -97,7 +97,6 @@ class user {
 			$this -> username = $username;
 			$this -> email = $email;
 			$this -> setPassword($password);
-			$this -> userlevel = $userlevel;
 			$this -> usermode = $usermode;
 			
 			if ($this -> usermode <= -1){
@@ -120,8 +119,8 @@ class user {
 		return $this -> email;
 	}
 
-	public function getUserlevel() {
-		return $this -> userlevel;
+	public function getTrack_ID() {
+		return $this -> track_id;
 	}
 	
 	public function getUsermode() {
@@ -229,10 +228,10 @@ class user {
 			$sql = "INSERT INTO " . settings::getDbPrefix() . "users " .
 			"(username, email, password, " .
 			"salt, validationkey, sessionkey, " .
-			"usermode, userlevel) " .
+			"usermode, track_id) " .
 			"VALUES (:username, :email, :password, " .
 			":salt, :validationkey, :sessionkey, " .
-			":usermode, :userlevel);";
+			":usermode, :track_id);";
 		} else {
 			$sql = "UPDATE " . settings::getDbPrefix() . "users " .
 			"SET username = :username, " .
@@ -242,7 +241,7 @@ class user {
 			"validationkey = :validationkey, " .
 			"sessionkey = :sessionkey, " .
 			"usermode = :usermode, " .
-			"userlevel = :userlevel " .
+			"track_id = :track_id " .
 			"WHERE id = :id";
 		}
 
@@ -256,7 +255,7 @@ class user {
 					':validationkey' => $this -> validationkey,
 					':sessionkey' => $this -> sessionkey,
 					':usermode' => $this -> usermode,
-					':userlevel' => $this -> userlevel));
+					':track_id' => $this -> track_id));
 		} else {
 			$stmt -> execute(array(':username' => $this -> username,
 					':email' => $this -> email,
@@ -265,7 +264,7 @@ class user {
 					':validationkey' => $this -> validationkey,
 					':sessionkey' => $this -> sessionkey,
 					':usermode' => $this -> usermode,
-					':userlevel' => $this -> userlevel,
+					':track_id' => $this -> track_id,
 					':id' => $this -> id));
 		}
 	}
