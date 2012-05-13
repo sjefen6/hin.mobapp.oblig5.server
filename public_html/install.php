@@ -40,7 +40,7 @@ if (!file_exists($settingsFile)) {
          		"validationkey VARCHAR(100) NOT NULL," .
          		"sessionkey VARCHAR(100) NOT NULL," .
          		"usermode TINYINT NOT NULL," . // -1 = not validated, 0 = disabeled, 1 = active
-         		"userlevel TINYINT NOT NULL" .
+         		"track_id INT NULL" .
        		");";
 			
 			$create_tracks = 
@@ -58,6 +58,12 @@ if (!file_exists($settingsFile)) {
                 // FOREIGN KEY for winner_user_id -> kc_users(id)
          		"INDEX win_id (winner)," .
                 "FOREIGN KEY (winner) REFERENCES " . $dbprefix . "users(id)" .
+                "ON DELETE CASCADE" .
+       		");" .
+       		"ALTER TABLE " . $dbprefix . "users (" .
+                // FOREIGN KEY for track_id -> kc_tracks(id)
+         		"INDEX trk_id (track_id)," .
+                "FOREIGN KEY (track_id) REFERENCES " . $dbprefix . "tracks(id)" .
                 "ON DELETE CASCADE" .
        		");";
 			

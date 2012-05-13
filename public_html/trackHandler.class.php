@@ -85,7 +85,7 @@ class track{
 					'creator' => $creatorUserName,
 					'winner' => $winnerUserName,
 					'start_ts' => $this->start_ts,
-					'stop_ts' => $this->stop_ts);
+					'stop_ts' => $this->stop_ts);//TODO: Add påmeldte
 	}
 	
 	private function save($new = false){
