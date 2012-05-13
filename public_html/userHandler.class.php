@@ -85,6 +85,8 @@ class user {
 	private $salt;
 	private $validationkey;
 	private $sessionkey;
+	private $latitude;
+	private $longitude;
 	private $usermode;
 	private $track_id;
 
@@ -132,6 +134,11 @@ class user {
 		$this -> password = sha1($password . $this -> salt);
 	}
 	
+	public function getSessionkey()
+	{
+		return $this->sessionkey;
+	}
+	
 	private function resetSessionKey(){
 		$this -> sessionkey = $this -> random_gen(30);
 		$this -> save();
@@ -169,6 +176,17 @@ class user {
 		$this -> resetSessionKey();
 		setcookie("username");
 		setcookie("sessionkey");
+	}
+	
+	public function join($track_id){
+		$this->track_id = $track_id;
+		$this->save();
+	}
+	
+	public function report($lat, $long){
+		$this->latitude = $lat;
+		$this->longitude = $long;
+		$this->save();
 	}
 	
 	private function sendRegisterValidation(){
@@ -228,9 +246,11 @@ class user {
 			$sql = "INSERT INTO " . settings::getDbPrefix() . "users " .
 			"(username, email, password, " .
 			"salt, validationkey, sessionkey, " .
+			"latitude, longitude, " .
 			"usermode, track_id) " .
 			"VALUES (:username, :email, :password, " .
 			":salt, :validationkey, :sessionkey, " .
+			":latitude, :longitude, " .
 			":usermode, :track_id);";
 		} else {
 			$sql = "UPDATE " . settings::getDbPrefix() . "users " .
@@ -240,6 +260,8 @@ class user {
 			"salt = :salt, " .
 			"validationkey = :validationkey, " .
 			"sessionkey = :sessionkey, " .
+			"latitude = :latitude, " .
+			"longitude = :longitude, " .
 			"usermode = :usermode, " .
 			"track_id = :track_id " .
 			"WHERE id = :id";
@@ -254,6 +276,8 @@ class user {
 					':salt' => $this -> salt,
 					':validationkey' => $this -> validationkey,
 					':sessionkey' => $this -> sessionkey,
+					':latitude' => $this -> latitude,
+					':longitude' => $this -> longitude,
 					':usermode' => $this -> usermode,
 					':track_id' => $this -> track_id));
 		} else {
@@ -263,6 +287,8 @@ class user {
 					':salt' => $this -> salt,
 					':validationkey' => $this -> validationkey,
 					':sessionkey' => $this -> sessionkey,
+					':latitude' => $this -> latitude,
+					':longitude' => $this -> longitude,
 					':usermode' => $this -> usermode,
 					':track_id' => $this -> track_id,
 					':id' => $this -> id));

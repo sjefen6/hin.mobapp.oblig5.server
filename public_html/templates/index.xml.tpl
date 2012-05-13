@@ -6,6 +6,9 @@
 		<signedin>true</signedin>
 		<username>{$user->getUsername()}</username>
 		<track>{$user->getTrack_ID()}</track>
+{if $action == "auth"}
+		<sessionkey>{$user->getSessionkey()}</sessionkey>
+{/if}
 {else}
 		<signedin>false</signedin>
 {/if}

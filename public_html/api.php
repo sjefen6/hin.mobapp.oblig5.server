@@ -9,17 +9,17 @@ require 'userHandler.class.php';
 
 $smarty = new Smarty;
 $settings = new settings("../settings.xml");
+$users = new userHandler();
 
 //$smarty->force_compile = true;
 //$smarty->debugging = true;
 //$smarty->caching = false;
 //$smarty->cache_lifetime = 120;
-$smarty->assign("mode","default");
 
 /*
  * Inputs
  */
-$username = $password = $sessionkey = $validationkey = $action = $target = null;
+$username = $password = $sessionkey = $validationkey = $action = $target = $track = null;
 $_POSTGET = array_merge($_GET, $_POST);
 $_GETCOOKIE = array_merge($_GET, $_COOKIE);
 // Username
@@ -46,27 +46,54 @@ if (isset($_POSTGET["action"])){
 if (isset($_POSTGET["target"])){
 	$target = $_POSTGET["target"];
 }
+// Track
+if (isset($_POSTGET["track"])){
+	$track = $_POSTGET["track"];
+}
 
 /*
- * Logout subrutine
- * This comes before the login subrutine so that the user is logged out when the credetials are validated
+ * E-mail validation
  */
-$users = new userHandler();
-if ($action = "logout"){
-	$users -> logout($username, $password, $sessionkey);
+if (isset($validationkey)){
+	$validation = $users -> validate($username, $validationkey); // E-mail validation
 }
 
 /*
  * Login subutine
 */
-$validation = $users -> validate($username, $validationkey); // E-mail validation
 $user = $users -> login($username, $password, $sessionkey);
+
+/*
+ * Action switch
+ */
+switch ($action) {
+	case "logout":
+		/*
+		 * Logout subrutine
+		 */
+		$users -> logout($username, $password, $sessionkey);
+		$user = null;
+		break;
+	case "auth":
+		$smarty->assign("action", "auth");
+		break;
+	case "join":
+		$user->join($track);
+		break;
+	case "report":
+		break;
+	default:
+		break;
+}
+
+/*
+ * Sending the user to smarty
+ */
 $smarty->assign("user", $user);
 
 /*
- * Main content switch
+ * Main target switch
 */
-
 switch ($target) {
     case "tracks":
         $tracks = new trackHandler();
