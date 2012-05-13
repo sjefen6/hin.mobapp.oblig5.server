@@ -19,30 +19,32 @@ $smarty->assign("mode","default");
 /*
  * Inputs
  */
-$user = $password = $sessionkey = $validationkey = $action = $target = null;
+$username = $password = $sessionkey = $validationkey = $action = $target = null;
+$_POSTGET = array_merge($_GET, $_POST);
+$_GETCOOKIE = array_merge($_GET, $_COOKIE);
 // Username
-if (isset($_REQUEST["username"])){
-	$username = $_REQUEST["username"];
+if (isset($_POSTGET["username"])){
+	$username = $_POSTGET["username"];
 }
 // Password
-if (isset($_REQUEST["password"])){
-	$password = $_REQUEST["password"];
+if (isset($_POSTGET["password"])){
+	$password = $_POSTGET["password"];
 }
 // Sessionkey
-if (isset($_REQUEST["sessionkey"])){
-	$sessionkey = $_REQUEST["sessionkey"];
+if (isset($_GETCOOKIE["sessionkey"])){
+	$sessionkey = $_GETCOOKIE["sessionkey"];
 }
 // Validationkey
-if (isset($_REQUEST["validationkey"])){
-	$validationkey = $_REQUEST["validationkey"];
+if (isset($_POSTGET["validationkey"])){
+	$validationkey = $_POSTGET["validationkey"];
 }
 // Action
-if (isset($_REQUEST["action"])){
-	$action = $_REQUEST["action"];
+if (isset($_POSTGET["action"])){
+	$action = $_POSTGET["action"];
 }
 // Target
-if (isset($_REQUEST["target"])){
-	$target = $_REQUEST["target"];
+if (isset($_POSTGET["target"])){
+	$target = $_POSTGET["target"];
 }
 
 /*
@@ -67,8 +69,8 @@ $smarty->assign("user", $user);
 
 switch ($target) {
     case "tracks":
-        $tracks = new trackhandler();
-        $smarty->assign("tracks", $tracks -> getAllSmarty($users));
+        $tracks = new trackHandler();
+        $smarty->assign("tracks", $tracks->getArray());
 		$smarty->display('tracks.xml.tpl');
         break;
     case "post":

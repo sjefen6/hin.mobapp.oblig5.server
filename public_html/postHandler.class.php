@@ -28,7 +28,6 @@ class postHandler{
 class Post{
 	private $id;
 	private $track_id;
-	private $post_number;
 	private $radius;
 	private $longitude;
 	private $latitude;
@@ -48,6 +47,15 @@ class Post{
 	public function getId(){
 		return $this->id;
 	}
+	
+	public function getTrack_ID(){
+		return $this -> track_id;
+	}
+	
+	public function getPost_ID(){
+		return $this -> track_id;
+	}
+	
 	
 	private function save($new = false){
 		/*** The SQL SELECT statement ***/

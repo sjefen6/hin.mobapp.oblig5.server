@@ -1,6 +1,6 @@
 <?php
 class userHandler {
-	private $userArray;
+	private static $userArray = array();
 
 	function __construct() {
 		$sql = "SELECT * FROM " . settings::getDbPrefix() . "users";
@@ -8,7 +8,7 @@ class userHandler {
 		$stmt = settings::getDatabase() -> prepare($sql);
 		$stmt->execute();
 
-		$this -> userArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'user');
+		self::$userArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'user');
 	}
 	
 	public function validate($username, $validationkey){
@@ -51,7 +51,7 @@ class userHandler {
 	}
 	
 	private function getUser($username){
-		foreach ($this->userArray as $user) {
+		foreach (self::$userArray as $user) {
 			if ($user -> getUsername() == $username) {
 				return $user;
 			}
@@ -59,8 +59,8 @@ class userHandler {
 		return null;
 	}
 	
-	public function getUserById($id){
-		foreach ($this->userArray as $user) {
+	public static function getUserById($id){
+		foreach (self::$userArray as $user) {
 			if ($user -> getId() == $id) {
 				return $user;
 			}
@@ -70,7 +70,7 @@ class userHandler {
 
 	public function addUser($username, $email, $password, $usermode) {
 		if ($this -> getUser($username) == NULL){
-			$this -> userArray[] = new user($username, $email, $password, $usermode);
+			self::$userArray[] = new user($username, $email, $password, $usermode);
 			return true;
 		}
 		return false;

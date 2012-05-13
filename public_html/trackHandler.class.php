@@ -1,6 +1,7 @@
 <?php
-class trackHandler{
+class trackHandler {
 	private $trackArray;
+	private $position;
 
 	function __construct() {
 		$sql = "SELECT * FROM " . settings::getDbPrefix(). "tracks";
@@ -9,24 +10,20 @@ class trackHandler{
 		$stmt->execute();
 		
 		$this -> trackArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'track');
+		$this -> position = 0;
 	}
 
-	public function getTrack($id, $users){
+	public function getTrack($id){
 		foreach ($this->trackArray as $track) {
 			if ($id == $track->getId()) {
-				return $track->getSmarty($users);
+				return $track->getSmarty($this -> users);
 			}
 		}
 		return false;
 	}
-
-	public function getAllSmarty($users){
-		$returnArray = array();
-
-		foreach ($this->trackArray as $track) {
-			$returnArray[] = $track->getSmarty($users);
-		}
-		return $returnArray;
+	
+	public function getArray(){
+		return $this->trackArray;
 	}
 	
 	public function addTrack($name, $creator, $start_ts, $stop_ts){
@@ -62,7 +59,22 @@ class track{
 	}
 
 	public function getCreator(){
+		return userHandler::getUserById($this->creator) -> getUsername();
+	}
+
+	public function getCreatorId(){
 		return $this->creator;
+	}
+	
+	public function getWinner(){
+		if (!isset($this->winner)){
+			return null;
+		}
+		return userHandler::getUserById($this->winner) -> getUsername();
+	}
+
+	public function getWinnerId(){
+		return $this->winner;
 	}
 
 	public function getStart_TS(){
@@ -71,21 +83,6 @@ class track{
 	
 	public function getStop_TS(){
 		return $this->stop_ts;
-	}
-	
-	public function getSmarty($users){
-		$creatorUserName = $users->getUserById($this->creator) -> getUsername();
-		if (isset($this->winner)){
-			$winnerUserName = $users->getUserById($this->winner) -> getUsername();
-		} else {
-			$winnerUserName = "";
-		}
-		return array('id' => $this -> id,
-					'name' => $this -> name,
-					'creator' => $creatorUserName,
-					'winner' => $winnerUserName,
-					'start_ts' => $this->start_ts,
-					'stop_ts' => $this->stop_ts);//TODO: Add påmeldte
 	}
 	
 	private function save($new = false){
