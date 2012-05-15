@@ -50,6 +50,14 @@ if (isset($_POSTGET["target"])){
 if (isset($_POSTGET["track"])){
 	$track = $_POSTGET["track"];
 }
+// Latitude
+if (isset($_POSTGET["latitude"])){
+	$latitude = $_POSTGET["latitude"];
+}
+// Longitude
+if (isset($_POSTGET["longitude"])){
+	$longitude = $_POSTGET["longitude"];
+}
 
 /*
  * E-mail validation
@@ -71,16 +79,21 @@ switch ($action) {
 		/*
 		 * Logout subrutine
 		 */
-		$users -> logout($username, $password, $sessionkey);
+		$user -> logout();
 		$user = null;
 		break;
 	case "auth":
 		$smarty->assign("action", "auth");
 		break;
 	case "join":
-		$user->join($track);
+		if(isset($user)){
+			$user->join($track);
+		}
 		break;
 	case "report":
+		if(isset($user)){
+			$user->report($latitude,$longitude);
+		}
 		break;
 	default:
 		break;

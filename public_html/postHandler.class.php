@@ -3,25 +3,32 @@
 class postHandler{
 	private $postArray;
 
-	function __construct($filename) {
-		$sql = "SELECT * FROM " . settings::getDbPrefix() . "posts";
+	function __construct($track) {
+		$sql = "SELECT * FROM " . settings::getDbPrefix(). "posts WHERE track_id = $track";
 		
-		$stmt = settings::getDatabase() -> query($sql);
+		// SELECT rdb_posts.*,  rdb_visited_posts.ts
+		// FROM rdb_posts
+		// FULL JOIN rdb_visited_posts 
+		// ON rdb_posts.id = rdb_visited_posts.post_id
+		// WHERE rdb_visited_posts.user_id = 1
 		
-		$this -> postArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'posts');
+		$stmt = settings::getDatabase() -> prepare($sql);
+		$stmt->execute();
+		
+		$this -> trackArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'post');
 	}
 	
-	public function getPosts($id, $users){
-		foreach ($this->trackArray as $track) {
-			if ($id == $track->getId()) {
-				return $track->getSmarty($users);
+	public function getPost($id){
+		foreach ($this->postkArray as $post) {
+			if ($id == $post->getId()) {
+				return $track;
 			}
 		}
-		return false;
+		return null;
 	}
 	
-	public function addPost($track_id, $post_number, $radius, $longitude, $latitude, $clue){
-		$this->postArray[] = new Post($track_id, $post_number, $radius, $longitude, $latitude, $clue);
+	public function addPost($track_id, $radius, $latitude, $longitude, $clue){
+		$this->postArray[] = new Post($track_id, $radius, $latitude, $longitude, $clue);
 	}
 }
 
@@ -29,19 +36,20 @@ class Post{
 	private $id;
 	private $track_id;
 	private $radius;
-	private $longitude;
 	private $latitude;
+	private $longitude;
 	private $clue;
-	private $ts;
 
-	function __construct($track_id = null, $post_number = null, $radius = null, $longitude = null, $latitude = null, $clue = null) {
-		$this->id = $post_id;
-		$this->url_id = $url_id;
-		$this->time = $time;
-		$this->author_id = $author_id;
-		$this->content = $desc;
-		
-		$this->save(true);
+	function __construct($track_id = null, $radius = null, $latitude = null, $longitude = null, $clue = null) {
+		if ($track_id != null || $radius != null || $latitude != null || $longitude != null || $clue != null) {
+			$this->track_id = $track_id;
+			$this->radius = $radius;
+			$this->latitude = $latitude;
+			$this->longitude = $longitude;
+			$this->clue = $clue;
+			
+			$this->save(true);
+		}
 	}
 
 	public function getId(){
@@ -52,40 +60,48 @@ class Post{
 		return $this -> track_id;
 	}
 	
-	public function getPost_ID(){
-		return $this -> track_id;
+	public function getRadius(){
+		return $this -> radius;
 	}
 	
+	public function getLatitude(){
+		return $this -> latitude;
+	}
+	
+	public function getLongitude(){
+		return $this -> longitude;
+	}
+	
+	public function getClue(){
+		return $this -> clue;
+	}
 	
 	private function save($new = false){
-		/*** The SQL SELECT statement ***/
 		if($new) {
-			$sql = "INSERT INTO " . settings::getDbPrefix() . "posts " . 
-			"(title, url_id, time, author_id, content) " . 
-			"VALUES (:title, :url_id, :time, :author_id, :content);";
+			$sql = "INSERT INTO " . settings::getDbPrefix() . "posts " .
+			"(track_id, radius, latitude, longitude, clue) " .
+			"VALUES (:track_id, :radius, :latitude, :longitude, :clue);";
 		} else {
 			$sql = "UPDATE " . settings::getDbPrefix() . "users " .
-			"SET title=:title, url_id=:url_id, time=:time, author_id=:author_id, content=:content " . 
+			"SET track_id=:track_id, radius=:radius, latitude=:latitude, longitude=:longitude, clue=:clue " . 
         	"WHERE id=:id";
 		}
 		
-		/*** fetch into an PDOStatement object ***/
 		$stmt = settings::getDatabase()->prepare($sql);
-
-		/*** fetch into the animals class ***/
+		
 		if ($new){
-			$stmt -> execute(array(':title'=>$this -> title,
-								':url_id'=>$this -> url_id,
-								':time'=>$this -> time,
-								':author_id'=>$this -> author_id,
-								':content'=>$this -> content));
+			$stmt -> execute(array(':track_id'=>$this -> track_id,
+								':radius'=>$this -> radius,
+								':latitude'=>$this -> latitude,
+								':longitude'=>$this -> longitude,
+								':clue'=>$this -> clue));
 		} else {
-			$stmt -> execute(array(':id'=>$this -> id,
-								':title'=>$this -> title,
-								':url_id'=>$this -> url_id,
-								':time'=>$this -> time,
-								':author_id'=>$this -> author_id,
-								':content'=>$this -> content));
+			$stmt -> execute(array(':track_id'=>$this -> track_id,
+								':radius'=>$this -> radius,
+								':latitude'=>$this -> latitude,
+								':longitude'=>$this -> longitude,
+								':clue'=>$this -> clue,
+								':id'=>$this -> id));
 		}
 	}
 }

@@ -31,17 +31,6 @@ class userHandler {
 		return null;
 	}
 	
-	public function logout($username, $password, $sessionkey){
-		$user = $this -> getUser($username);
-		if ($user != null && $user -> getUsermode() <= 1){
-			if ($user -> verifyPasword($password) || $user -> verifySessionCookie($sessionkey)){
-				$user -> logout();
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	public function lostpw($username, $email){
 		$user = $this ->getUser($username);
 		if ($user != null){

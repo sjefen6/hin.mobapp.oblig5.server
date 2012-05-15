@@ -1,7 +1,6 @@
 <?php
 class trackHandler {
 	private $trackArray;
-	private $position;
 
 	function __construct() {
 		$sql = "SELECT * FROM " . settings::getDbPrefix(). "tracks";
@@ -10,16 +9,15 @@ class trackHandler {
 		$stmt->execute();
 		
 		$this -> trackArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'track');
-		$this -> position = 0;
 	}
 
 	public function getTrack($id){
 		foreach ($this->trackArray as $track) {
 			if ($id == $track->getId()) {
-				return $track->getSmarty($this -> users);
+				return $track;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	public function getArray(){

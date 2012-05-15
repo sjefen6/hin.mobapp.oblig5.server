@@ -39,8 +39,8 @@ if (!file_exists($settingsFile)) {
          		"salt VARCHAR(100) NOT NULL," . //this is supposed to be a hashed value
          		"validationkey VARCHAR(100) NOT NULL," .
          		"sessionkey VARCHAR(100) NOT NULL," .
-         		"latitude DOUBLE PRECISION(9,6) NOT NULL," .
-         		"lognitude DOUBLE PRECISION(9,6) NOT NULL," .
+         		"latitude DOUBLE PRECISION(9,6) NULL," .
+         		"longitude DOUBLE PRECISION(9,6) NULL," .
          		"usermode TINYINT NOT NULL," . // -1 = not validated, 0 = disabeled, 1 = active
          		"track_id INT NULL" .  // tracks(id)
        		");";
@@ -59,7 +59,6 @@ if (!file_exists($settingsFile)) {
 			"CREATE TABLE " . $dbprefix . "posts (" .
 				"id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
          		"track_id INT NOT NULL," . // tracks(id)
-         		"post_number INT NOT NULL," .
          		"radius INT NOT NULL," .
          		"latitude DOUBLE PRECISION(9,6) NOT NULL," .
          		"longitude DOUBLE PRECISION(9,6) NOT NULL," .
