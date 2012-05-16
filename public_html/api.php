@@ -6,6 +6,7 @@ require 'libs/Smarty.class.php';
 require 'settings.class.php';
 require 'trackHandler.class.php';
 require 'userHandler.class.php';
+require 'vpHandler.class.php'
 
 $smarty = new Smarty;
 $settings = new settings("../settings.xml");

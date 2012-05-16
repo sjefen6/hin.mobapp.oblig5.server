@@ -27,6 +27,10 @@ class postHandler{
 		return null;
 	}
 	
+	public function getArray(){
+		return $this->postArray;
+	}
+	
 	public function addPost($track_id, $radius, $latitude, $longitude, $clue){
 		$this->postArray[] = new Post($track_id, $radius, $latitude, $longitude, $clue);
 	}

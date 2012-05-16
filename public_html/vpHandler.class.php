@@ -12,13 +12,13 @@
 class vpHandler{
 	private $vpArray;
 
-	function __construct($track) {
-		$sql = "SELECT * FROM " . settings::getDbPrefix(). "visited_posts";
+	function __construct($track_id) {
+		$sql = "SELECT * FROM " . settings::getDbPrefix(). "visited_posts WHERE track_id = $track_id AND user_id = " . $user->getID();
 		
 		$stmt = settings::getDatabase() -> prepare($sql);
 		$stmt->execute();
 		
-		$this -> trackArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'vp');
+		$this -> vpArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'vp');
 	}
 	
 	public function getVp($user_id, $post_id){
@@ -30,15 +30,19 @@ class vpHandler{
 		return null;
 	}
 	
-	public function getVpForTrack($track_id){
-		$returnArray = array();
-		
-		foreach ($this->vpArray as $vp) {
-			if ($vp->getTrack_ID() == $track_id){
-				$returnArray[] = $vp;
+	public function getArray($user=null){
+		if(!isset($user)){
+			return $this->trackArray;
+		} else {
+			$returnArray = array();
+			foreach ($vpArray as $vp) {
+				if($vp->getUser_ID() == $user->getId())
+				{
+					$returnArray[] = $vp;
+				}
 			}
+			return $returnArray;
 		}
-		return $returnArray;
 	}
 	
 	public function addVp($user_id, $track_id, $post_id, $ts){
