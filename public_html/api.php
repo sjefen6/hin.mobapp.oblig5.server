@@ -94,12 +94,16 @@ switch ($target) {
     case "tracks":
 		// List all available tracks
         $smarty->assign("tracks", $tracks->getArray());
+		$smarty->assign("errors",$errors);
 		$smarty->display('tracks.xml.tpl');
+		exit;
         break;
 	case "users":
 		// Location for all users
 		$smarty->assign("users", $users->getArray());
+		$smarty->assign("errors",$errors);
 		$smarty->display('users.xml.tpl');
+		exit;
 		break;
     case "post":
     	// The users current post
@@ -130,6 +134,7 @@ switch ($target) {
 		 */
         echo "i equals 2";
 		$smarty->assign("errors",$errors);
+		exit;
         break;
 	case "result":
 		// Scoreboard for a given track
