@@ -20,9 +20,9 @@ class postHandler{
 	}
 	
 	public function getPost($id){
-		foreach ($this->postkArray as $post) {
+		foreach ($this->postArray as $post) {
 			if ($id == $post->getId()) {
-				return $track;
+				return $post;
 			}
 		}
 		return null;

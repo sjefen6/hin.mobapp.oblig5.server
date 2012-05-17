@@ -56,6 +56,10 @@ class userHandler {
 		}
 		return null;
 	}
+	
+	public function getArray(){
+		return self::$userArray;
+	}
 
 	public function addUser($username, $email, $password, $usermode) {
 		if ($this -> getUser($username) == NULL){
@@ -116,6 +120,14 @@ class user {
 	
 	public function getUsermode() {
 		return $this -> usermode;
+	}
+	
+	public function getLatitude(){
+		return $this->latitude;
+	}
+	
+	public function getLongitude(){
+		return $this->longitude;
 	}
 
 	private function setPassword($password) {

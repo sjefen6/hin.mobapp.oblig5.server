@@ -52,10 +52,11 @@ switch ($action) {
 		}
 		break;
 	case "reached":
-		if(isset($user,$post) && $user->getTrack_ID() != null){
-			$posts = new postHandler();
-			$vps = new vpHandler();
-			$vps->addVp($user->getId(), $user->getTrack_ID(), $post, time());
+		$posts = new postHandler();
+		$vps = new vpHandler();
+		if(isset($user,$post) && $posts->getPost($post) != null){
+			var_dump($user->getId(), $posts->getPost($post)->getTrack_ID(), $post, time());
+			$vps->addVp($user->getId(), $posts->getPost($post)->getTrack_ID(), $post, time());
 		}
 		break;
 	default:
@@ -84,6 +85,11 @@ switch ($target) {
         $smarty->assign("tracks", $tracks->getArray());
 		$smarty->display('tracks.xml.tpl');
         break;
+	case "users":
+		// Scoreboard for a given track
+		$smarty->assign("users", $users->getArray());
+		$smarty->display('users.xml.tpl');
+		break;
     case "post":
     	// The users current post
     	if(!isset($posts)){

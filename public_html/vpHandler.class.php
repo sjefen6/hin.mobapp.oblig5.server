@@ -26,7 +26,7 @@ class vpHandler{
 	
 	public function getVp($user_id, $post_id){
 		foreach ($this->vpArray as $vp) {
-			if ($post_id == $track->getPost_ID() && $user_id == $track->getUser_ID() ) {
+			if ($post_id == $vp->getPost_ID() && $user_id == $vp->getUser_ID() ) {
 				return $vp;
 			}
 		}
@@ -49,7 +49,7 @@ class vpHandler{
 	}
 	
 	public function addVp($user_id, $track_id, $post_id, $ts){
-		if($this->getVp($user_id, $post_id) != null){
+		if($this->getVp($user_id, $post_id) == null){
 			$this->postArray[] = new Vp($user_id, $track_id, $post_id, $ts);
 		}
 	}
