@@ -3,10 +3,13 @@ header('Content-Type: text/xml; charset=utf-8');
 date_default_timezone_set("Europe/Berlin");
 
 require 'libs/Smarty.class.php';
+require 'inputs.php';
 require 'settings.class.php';
-require 'trackHandler.class.php';
+require 'tools.class.php';
 require 'userHandler.class.php';
-require 'vpHandler.class.php'
+require 'trackHandler.class.php';
+require 'postHandler.class.php';
+require 'vpHandler.class.php';
 
 $smarty = new Smarty;
 $settings = new settings("../settings.xml");
@@ -16,49 +19,6 @@ $users = new userHandler();
 //$smarty->debugging = true;
 //$smarty->caching = false;
 //$smarty->cache_lifetime = 120;
-
-/*
- * Inputs
- */
-$username = $password = $sessionkey = $validationkey = $action = $target = $track = null;
-$_POSTGET = array_merge($_GET, $_POST);
-$_GETCOOKIE = array_merge($_GET, $_COOKIE);
-// Username
-if (isset($_POSTGET["username"])){
-	$username = $_POSTGET["username"];
-}
-// Password
-if (isset($_POSTGET["password"])){
-	$password = $_POSTGET["password"];
-}
-// Sessionkey
-if (isset($_GETCOOKIE["sessionkey"])){
-	$sessionkey = $_GETCOOKIE["sessionkey"];
-}
-// Validationkey
-if (isset($_POSTGET["validationkey"])){
-	$validationkey = $_POSTGET["validationkey"];
-}
-// Action
-if (isset($_POSTGET["action"])){
-	$action = $_POSTGET["action"];
-}
-// Target
-if (isset($_POSTGET["target"])){
-	$target = $_POSTGET["target"];
-}
-// Track
-if (isset($_POSTGET["track"])){
-	$track = $_POSTGET["track"];
-}
-// Latitude
-if (isset($_POSTGET["latitude"])){
-	$latitude = $_POSTGET["latitude"];
-}
-// Longitude
-if (isset($_POSTGET["longitude"])){
-	$longitude = $_POSTGET["longitude"];
-}
 
 /*
  * E-mail validation
@@ -91,13 +51,22 @@ switch ($action) {
 			$user->join($track);
 		}
 		break;
-	case "report":
-		if(isset($user)){
-			$user->report($latitude,$longitude);
+	case "reached":
+		if(isset($user,$post) && $user->getTrack_ID() != null){
+			$posts = new postHandler();
+			$vps = new vpHandler();
+			$vps->addVp($user->getId(), $user->getTrack_ID(), $post, time());
 		}
 		break;
 	default:
 		break;
+}
+
+/*
+ * If a logged in user sends lat & long
+ */
+if(isset($user,$latitude,$longitude)){
+	$user->report($latitude,$longitude);
 }
 
 /*
@@ -110,13 +79,23 @@ $smarty->assign("user", $user);
 */
 switch ($target) {
     case "tracks":
+		// List all available tracks
         $tracks = new trackHandler();
         $smarty->assign("tracks", $tracks->getArray());
 		$smarty->display('tracks.xml.tpl');
         break;
     case "post":
     	// The users current post
-        echo "i equals 1";
+    	if(!isset($posts)){
+    		$posts = new postHandler();
+		}
+		if(!isset($vps)){
+			$vps = new vpHandler();
+		}
+    	if (isset($user)){
+    		$smarty->assign("post",tools::getCurrentPost($user, $posts, $vps));
+			$smarty->display('post.xml.tpl');
+    	}
         break;
     case "posts":
 		/*

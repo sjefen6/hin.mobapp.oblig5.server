@@ -3,8 +3,9 @@
 class postHandler{
 	private $postArray;
 
-	function __construct($track) {
-		$sql = "SELECT * FROM " . settings::getDbPrefix(). "posts WHERE track_id = $track";
+	function __construct() {
+		// $sql = "SELECT * FROM " . settings::getDbPrefix(). "posts WHERE track_id = " . $user->getTrack_ID();
+		$sql = "SELECT * FROM " . settings::getDbPrefix(). "posts";
 		
 		// SELECT rdb_posts.*,  rdb_visited_posts.ts
 		// FROM rdb_posts
@@ -15,7 +16,7 @@ class postHandler{
 		$stmt = settings::getDatabase() -> prepare($sql);
 		$stmt->execute();
 		
-		$this -> trackArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'post');
+		$this -> postArray = $stmt -> fetchALL(PDO::FETCH_CLASS, 'post');
 	}
 	
 	public function getPost($id){

@@ -2,11 +2,10 @@
 class tools{
 	public static function getCurrentPost($user, $posts, $vps){
 		$postArray = $posts->getArray();
-		$posts_size = count($postsArray);
-		for($i = 0; $i < $posts_size; $i++)
+		foreach($postArray as $post)
 		{
-			if (!isset($vps->getVp($user->getId(), $postArray[i]->getId()))){
-				return $postArray[i];
+			if ($vps->getVp($user->getId(), $post->getId()) == null){
+				return $post;
 			}
 		}
 		return null;

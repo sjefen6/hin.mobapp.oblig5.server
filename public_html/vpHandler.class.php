@@ -12,8 +12,11 @@
 class vpHandler{
 	private $vpArray;
 
-	function __construct($track_id) {
-		$sql = "SELECT * FROM " . settings::getDbPrefix(). "visited_posts WHERE track_id = $track_id AND user_id = " . $user->getID();
+	function __construct() {
+		// $sql = "SELECT * FROM " . settings::getDbPrefix(). "visited_posts WHERE track_id = " . $user->getTrack_ID() . " AND user_id = " . $user->getID();
+		
+		$sql = "SELECT * FROM " . settings::getDbPrefix(). "visited_posts";
+		
 		
 		$stmt = settings::getDatabase() -> prepare($sql);
 		$stmt->execute();
@@ -46,7 +49,9 @@ class vpHandler{
 	}
 	
 	public function addVp($user_id, $track_id, $post_id, $ts){
-		$this->postArray[] = new Vp($user_id, $track_id, $post_id, $ts);
+		if($this->getVp($user_id, $post_id) != null){
+			$this->postArray[] = new Vp($user_id, $track_id, $post_id, $ts);
+		}
 	}
 }
 
