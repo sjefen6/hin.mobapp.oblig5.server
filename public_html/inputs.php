@@ -9,7 +9,7 @@ $_GETCOOKIE = array_merge($_GET, $_COOKIE);
 
 // Username
 if (isset($_POSTGET["username"])){
-	$username = $_POSTGET["username"];
+	$username = htmlspecialchars($_POSTGET["username"]);
 }
 // Password
 if (isset($_POSTGET["password"])){
@@ -25,27 +25,27 @@ if (isset($_POSTGET["validationkey"])){
 }
 // Action
 if (isset($_POSTGET["action"])){
-	$action = $_POSTGET["action"];
+	$action = htmlspecialchars($_POSTGET["action"]);
 }
 // Target
 if (isset($_POSTGET["target"])){
-	$target = $_POSTGET["target"];
+	$target = htmlspecialchars($_POSTGET["target"]);
 }
 // Track
 if (isset($_POSTGET["track"])){
-	$track = $_POSTGET["track"];
+	$track = htmlspecialchars($_POSTGET["track"]);
 }
 // Latitude
 if (isset($_POSTGET["latitude"])){
-	$latitude = $_POSTGET["latitude"];
+	$latitude = htmlspecialchars($_POSTGET["latitude"]);
 }
 // Longitude
 if (isset($_POSTGET["longitude"])){
-	$longitude = $_POSTGET["longitude"];
+	$longitude = htmlspecialchars($_POSTGET["longitude"]);
 }
 // Post
 if (isset($_POSTGET["post"])){
-	$post = $_POSTGET["post"];
+	$post = htmlspecialchars($_POSTGET["post"]);
 }
 
 ?>

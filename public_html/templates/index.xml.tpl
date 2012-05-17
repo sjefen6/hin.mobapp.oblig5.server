@@ -13,5 +13,12 @@
 		<signedin>false</signedin>
 {/if}
 	</user>
-	{block name="main"}{/block}
+{if !empty($errors)}
+	<errors>
+{foreach from=$errors item=error}
+		<error>{$error}</error>
+{/foreach}
+	</errors>
+{/if}
+{block name="main"}{/block}
 </body>

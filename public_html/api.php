@@ -13,7 +13,7 @@ require 'vpHandler.class.php';
 
 $smarty = new Smarty;
 $settings = new settings("../settings.xml");
-$users = new userHandler();
+$errors = array();
 
 //$smarty->force_compile = true;
 //$smarty->debugging = true;
@@ -21,10 +21,18 @@ $users = new userHandler();
 //$smarty->cache_lifetime = 120;
 
 /*
+ * Showing optimalisation the middle finger and just load the whole database
+ */
+$users = new userHandler();
+$tracks = new trackHandler();
+$posts = new postHandler();
+$vps = new vpHandler();
+
+/*
  * E-mail validation
  */
 if (isset($validationkey)){
-	$validation = $users -> validate($username, $validationkey); // E-mail validation
+	$validation = $users -> validate($username, $validationkey);
 }
 
 /*
@@ -37,9 +45,6 @@ $user = $users -> login($username, $password, $sessionkey);
  */
 switch ($action) {
 	case "logout":
-		/*
-		 * Logout subrutine
-		 */
 		$user -> logout();
 		$user = null;
 		break;
@@ -49,14 +54,21 @@ switch ($action) {
 	case "join":
 		if(isset($user)){
 			$user->join($track);
+		} else {
+			$errors[] = "Cannot join track $track. User is not signed in.";
 		}
 		break;
 	case "reached":
-		$posts = new postHandler();
-		$vps = new vpHandler();
 		if(isset($user,$post) && $posts->getPost($post) != null){
-			var_dump($user->getId(), $posts->getPost($post)->getTrack_ID(), $post, time());
-			$vps->addVp($user->getId(), $posts->getPost($post)->getTrack_ID(), $post, time());
+			$track_id = $posts->getPost($post)->getTrack_ID();
+			
+			if(time() >= $tracks->getTrack($track_id)->getStart_TS() && time() <= $tracks->getTrack($track_id)->getStop_TS()){
+				$vps->addVp($user->getId(), $track_id, $post, time());
+			} else {
+				$errors[] = "Unable to set post $post as visited. The track is finished or not yet started.";
+			}
+		} else {
+			$errors[] = "Unable to set post $post as visited. User must be signed in, the post parameter must be set.";
 		}
 		break;
 	default:
@@ -81,27 +93,33 @@ $smarty->assign("user", $user);
 switch ($target) {
     case "tracks":
 		// List all available tracks
-        $tracks = new trackHandler();
         $smarty->assign("tracks", $tracks->getArray());
 		$smarty->display('tracks.xml.tpl');
         break;
 	case "users":
-		// Scoreboard for a given track
+		// Location for all users
 		$smarty->assign("users", $users->getArray());
 		$smarty->display('users.xml.tpl');
 		break;
     case "post":
     	// The users current post
-    	if(!isset($posts)){
-    		$posts = new postHandler();
-		}
-		if(!isset($vps)){
-			$vps = new vpHandler();
-		}
     	if (isset($user)){
-    		$smarty->assign("post",tools::getCurrentPost($user, $posts, $vps));
-			$smarty->display('post.xml.tpl');
-    	}
+    		$track_id = $posts->getPost($post)->getTrack_ID();
+			
+			if(time() >= $tracks->getTrack($track_id)->getStart_TS() && time() <= $tracks->getTrack($track_id)->getStop_TS()){
+				if ($current_post = tools::getCurrentPost($user, $posts, $vps) == null){
+					$errors[] = "Unable to get the users current post. The track is out of posts or the user has not joined a track.";
+				}
+	    		$smarty->assign("post",$current_post);
+				$smarty->assign("errors",$errors);
+				$smarty->display('post.xml.tpl');
+				exit;
+			} else {
+				$errors[] = "Unable to get the users current post. The track is finished or not yet started.";
+			}
+    	}else {
+			$errors[] = "Unable to get the users current post. User must be signed in.";
+		}
         break;
     case "posts":
 		/*
@@ -111,13 +129,16 @@ switch ($target) {
 		 * track.
 		 */
         echo "i equals 2";
+		$smarty->assign("errors",$errors);
         break;
 	case "result":
 		// Scoreboard for a given track
-		break;
-	default:
-		$smarty->display('index.xml.tpl');
+		$smarty->assign("errors",$errors);
+		exit;
 		break;
 }
-exit;
+
+$smarty->assign("errors",$errors);
+$smarty->display('index.xml.tpl');
+
 ?>
