@@ -28,8 +28,18 @@ class postHandler{
 		return null;
 	}
 	
-	public function getArray(){
-		return $this->postArray;
+	public function getArray($track_id = null){
+		$returnArray = array();
+		if (!isset($track_id)){
+			$returnArray = $this->postArray;
+		} else {
+			foreach ($this->postArray as $post){
+				if ($post->getTrack_ID() == $track_id){
+					$returnArray[] = $post;
+				}
+			}
+		}
+		return $returnArray;
 	}
 	
 	public function addPost($track_id, $radius, $latitude, $longitude, $clue){

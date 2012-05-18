@@ -86,6 +86,10 @@ if(isset($user,$latitude,$longitude)){
  * Sending the user to smarty
  */
 $smarty->assign("user", $user);
+/*
+ * Sending errors to smarty
+ */
+$smarty->assign("errors",$errors);
 
 /*
  * Main target switch
@@ -94,36 +98,39 @@ switch ($target) {
     case "tracks":
 		// List all available tracks
         $smarty->assign("tracks", $tracks->getArray());
-		$smarty->assign("errors",$errors);
 		$smarty->display('tracks.xml.tpl');
 		exit;
         break;
 	case "users":
 		// Location for all users
 		$smarty->assign("users", $users->getArray());
-		$smarty->assign("errors",$errors);
 		$smarty->display('users.xml.tpl');
 		exit;
 		break;
     case "post":
     	// The users current post
-    	if (isset($user)){
-    		$track_id = $posts->getPost($post)->getTrack_ID();
-			
-			if(time() >= $tracks->getTrack($track_id)->getStart_TS() && time() <= $tracks->getTrack($track_id)->getStop_TS()){
-				if ($current_post = tools::getCurrentPost($user, $posts, $vps) == null){
-					$errors[] = "Unable to get the users current post. The track is out of posts or the user has not joined a track.";
-				}
-	    		$smarty->assign("post",$current_post);
-				$smarty->assign("errors",$errors);
-				$smarty->display('post.xml.tpl');
-				exit;
+    	$current_post = null;
+    	if (!isset($user)){
+    		$errors[] = "Unable to get the users current post. User must be signed in.";
+		} else {
+    		$current_post = tools::getCurrentPost($user, $posts, $vps);
+		    $track_id = $user->getTrack_ID();
+		    if (!isset($track_id)){
+		    	$errors[] = "Unable to get the users current post. The user has not joined a track.";
 			} else {
-				$errors[] = "Unable to get the users current post. The track is finished or not yet started.";
+				if(!(time() >= $tracks->getTrack($track_id)->getStart_TS() && time() <= $tracks->getTrack($track_id)->getStop_TS())){
+					$errors[] = "Unable to get the users current post. The track is finished or not yet started.";
+				} else {
+		    		if (!isset($current_post)){
+						$errors[] = "Unable to get the users current post. The track is out of posts.";
+					}
+				}
 			}
-    	}else {
-			$errors[] = "Unable to get the users current post. User must be signed in.";
 		}
+		$smarty->assign("post",$current_post);
+		$smarty->assign("errors",$errors);
+		$smarty->display('post.xml.tpl');
+		exit;
         break;
     case "posts":
 		/*
@@ -132,8 +139,19 @@ switch ($target) {
 		 * has run out or the user is the creator of the
 		 * track.
 		 */
-        echo "i equals 2";
-		$smarty->assign("errors",$errors);
+		$postsArray = array();
+		if (!isset($track)){
+			$errors[] = "Unable to list posts. No track defined.";
+		} else {
+	        if ($user->getId() != $tracks->getTrack($track)->getCreatorId() || time() < $tracks->getTrack($track)->getStop_TS()){
+	        	$errors[] = "Unable to list posts. Track is still active.";
+	        } else {
+	        	$postsArray = $posts->getArray($track);
+	        }	
+		}
+	    $smarty->assign("posts", $postsArray);
+    	$smarty->assign("errors",$errors);
+    	$smarty->display('posts.xml.tpl');
 		exit;
         break;
 	case "result":
