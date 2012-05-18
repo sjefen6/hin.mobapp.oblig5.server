@@ -24,7 +24,7 @@ class userHandler {
 	public function login($username, $password, $sessionkey){
 		$user = $this -> getUser($username);
 		if ($user != null && $user -> getUsermode() <= 1){
-			if ($user -> verifyPasword($password) || $user -> verifySessionCookie($sessionkey)){
+			if ($user -> verifyPasword($password) || $user -> verifySessionkey($sessionkey)){
 				return $user;
 			}
 		}
@@ -166,7 +166,7 @@ class user {
 		return false;
 	}
 
-	public function verifySessionCookie($sessionkey) {
+	public function verifySessionkey($sessionkey) {
 		if ($this -> sessionkey === $sessionkey) {
 			return true;
 		}

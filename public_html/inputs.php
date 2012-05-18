@@ -6,10 +6,15 @@
 $username = $password = $sessionkey = $validationkey = $action = $target = $track = $latitude = $longitude = $post = null;
 $_POSTGET = array_merge($_GET, $_POST);
 $_GETCOOKIE = array_merge($_GET, $_COOKIE);
+$_GETPOSTCOOKIE = array_merge($_COOKIE,$_POST,$_GET);
 
+// Format
+if (isset($_POSTGET["format"])){
+	$format = htmlspecialchars($_POSTGET["format"]);
+}
 // Username
-if (isset($_POSTGET["username"])){
-	$username = htmlspecialchars($_POSTGET["username"]);
+if (isset($_GETPOSTCOOKIE["username"])){
+	$username = htmlspecialchars($_GETPOSTCOOKIE["username"]);
 }
 // Password
 if (isset($_POSTGET["password"])){
@@ -18,6 +23,10 @@ if (isset($_POSTGET["password"])){
 // Sessionkey
 if (isset($_GETCOOKIE["sessionkey"])){
 	$sessionkey = $_GETCOOKIE["sessionkey"];
+}
+// E-mail
+if (isset($_POST["mail"])){
+	$mail = htmlspecialchars($_POSTGET["mail"]);
 }
 // Validationkey
 if (isset($_POSTGET["validationkey"])){
