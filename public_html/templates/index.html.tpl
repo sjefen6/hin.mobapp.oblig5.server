@@ -53,7 +53,7 @@
 {block name="content"}
 {/block}
 {/if}
-<footer><p>Alle rettigheter &copy; Vegard Lang&aring;s og Daniel Razafimandimby.<br>Mer info om cms-et p&aring; <a href="https://github.com/sjefen6/webapp-blogg" target="_blank">github</a></p></footer>
+<footer><p>Alle rettigheter &copy; Vegard Lang&aring;s og Daniel Razafimandimby.<br>Mer info om cms-et p&aring; <a href="https://github.com/sjefen6/rebus-db" target="_blank">github</a></p></footer>
 </section>
 </body>
 </html>
