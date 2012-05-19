@@ -55,8 +55,11 @@ $user = $users -> login($username, $password, $sessionkey);
  */
 switch ($action) {
 	case "logout":
-		$user -> logout();
-		$user = null;
+		if (isset($user)){
+			$user -> logout();
+		}
+		header( "refresh:1;url=/" );
+		exit;
 		break;
 	case "auth":
 		$smarty->assign("action", "auth");
