@@ -156,6 +156,7 @@ switch ($target) {
     		$current_post = tools::getCurrentPost($user, $posts, $vps);
 		    $track_id = $user->getTrack_ID();
 		    if (!isset($track_id)){
+		    	$current_post = null;
 		    	$errors[] = "Unable to get the users current post. The user has not joined a track.";
 			} else {
 				if(!(time() >= $tracks->getTrack($track_id)->getStart_TS() && time() <= $tracks->getTrack($track_id)->getStop_TS())){
