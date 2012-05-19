@@ -90,7 +90,7 @@ switch ($action) {
  */
 if(isset($name,$start,$stop) && isset($user)){
 	$tracks->addTrack($name, $user->getId(), $start, $stop);
-} else {
+} elseif (isset($name) || isset($start) || isset($stop)) {
 	$errors[] = "Get a <a href\"http://google.com/chrome\">decent browser</a>, then fill inn the entire form.";
 }
 
@@ -107,7 +107,7 @@ if(isset($track,$radius,$latitude,$longitude) && isset($user)){
 	} else {
 		$errors[] = "I don't think this is a track in our database. PS: cheating is not nice.";
 	}
-} else {
+} elseif (isset($radius)) {
 	$errors[] = "Get a <a href\"http://google.com/chrome\">decent browser</a>, then fill inn the entire form.";
 }
 
