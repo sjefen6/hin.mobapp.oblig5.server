@@ -5,11 +5,11 @@
 	<tr><th>Track</th><th>Creator</th><th>Winner</th><th>Start</th><th>End</th></tr>
 	{foreach from=$tracks item=track}
 	<tr>
-		<td><a href="?track={$track.id}">{$track.name}</a></tr>
-		<td>{$track.creator}</td>
-		<td>{$track.winner}</td>
-		<td>{$track.start_ts}</td>
-		<td>{$track.stop_ts}</td>
+		<td><a href="?track={$track->getId()}">{$track->getName()}</a></tr>
+		<td>{$track->getId()}</td>
+		<td>{$track->getWinner()}</td>
+		<td>{$track->getStart_TS()}</td>
+		<td>{$track->getStop_TS()}</td>
 	</tr>
 {/foreach}
 </table>

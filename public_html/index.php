@@ -35,14 +35,14 @@ $vps = new vpHandler();
 /*
  * E-mail validation
  */
-if (isset($validationkey)){
+if (isset($username,$validationkey)){
 	$validation = $users -> validate($username, $validationkey);
 }
 
 /*
  * User is regestering
  */
-if (isset($mail)){
+if (isset($username,$mail,$password)){
 	$users -> addUser($username, $mail, $password, -1);
 }
 
@@ -50,7 +50,6 @@ if (isset($mail)){
  * Login subutine
 */
 $user = $users -> login($username, $password, $sessionkey);
-
 /*
  * Action switch
  */

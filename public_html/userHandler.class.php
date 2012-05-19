@@ -12,10 +12,10 @@ class userHandler {
 	}
 	
 	public function validate($username, $validationkey){
-		if (!isset($username) && !isset($validationkey)){
+		if (isset($username) && isset($validationkey)){
 			$user = $this -> getUser($username);
-			if ($user != null && $user -> getUsermode() >= -1 && $user -> verifyValidationkey($validationkey)){
-				return true;
+			if ($user != null && $user -> getUsermode() <= -1){
+				return $user -> verifyValidationkey($validationkey);
 			}
 		}
 		return false;
@@ -23,7 +23,7 @@ class userHandler {
 	
 	public function login($username, $password, $sessionkey){
 		$user = $this -> getUser($username);
-		if ($user != null && $user -> getUsermode() <= 1){
+		if ($user != null && $user -> getUsermode() >= 1){
 			if ($user -> verifyPasword($password) || $user -> verifySessionkey($sessionkey)){
 				return $user;
 			}
