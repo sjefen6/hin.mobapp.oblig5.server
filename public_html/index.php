@@ -114,7 +114,7 @@ if(isset($track,$radius,$latitude,$longitude) && isset($user)){
 /*
  * If a logged in user sends lat & long
  */
-if(isset($user,$latitude,$longitude) && empty($clue)){
+if(isset($user,$latitude,$longitude) && empty($clue) && !isset($radius)){
 	$user->report($latitude,$longitude);
 }
 
