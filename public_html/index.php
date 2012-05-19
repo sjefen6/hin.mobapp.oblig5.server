@@ -153,13 +153,13 @@ switch ($target) {
     	if (!isset($user)){
     		$errors[] = "Unable to get the users current post. User must be signed in.";
 		} else {
-    		$current_post = tools::getCurrentPost($user, $posts, $vps);
 		    $track_id = $user->getTrack_ID();
 		    if (!isset($track_id)){
-		    	$current_post = null;
 		    	$errors[] = "Unable to get the users current post. The user has not joined a track.";
 			} else {
+				$current_post = tools::getCurrentPost($user, $posts, $vps);
 				if(!(time() >= $tracks->getTrack($track_id)->getStart_TS() && time() <= $tracks->getTrack($track_id)->getStop_TS())){
+					$current_post = null;
 					$errors[] = "Unable to get the users current post. The track is finished or not yet started.";
 				} else {
 		    		if (!isset($current_post)){
