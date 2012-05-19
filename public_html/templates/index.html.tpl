@@ -15,7 +15,7 @@
 {if !isset($user)}
 	<h1>Login</h1>
 	<form method="post">
-		<label for="username">Brukernavn:</label>
+		<label for="username">Username:</label>
 		<input type="text" name="username" required="required" /><br>
 		<label for="password">Passord:</label>
 		<input type="password" name="password" required="required" /><br>
@@ -23,7 +23,7 @@
 	</form>
 	<h1>Register</h1>
 	<form method="post">
-		<label for="username">Brukernavn:</label>
+		<label for="username">Username:</label>
 		<input type="text" name="username" required="required" /><br>
 		<label for="mail">E-mail:</label>
 		<input type="email" name="mail" required="required" /><br>
@@ -43,15 +43,38 @@
 		<a href="/">Tracks</a>
 		<a href="/?action=logout">Logout</a>
 	</nav>
+	<p>Hi {$user->getUsername()}!</p>
 	
-	<div id="content">
-	{block name="errors"}{if isset($error) and count($error) != 0}
-		<div id="errors">
-			<h1>{$error}</h1>
-		</div>{/if}
-	{/block}
-{block name="content"}
-{/block}
+	<h1>Add Track</h1>
+	<form method="post">
+		<label for="name">Name:</label>
+		<input type="text" name="name" required="required" /><br>
+		<label for="start">Start (Unix timestamp):</label>
+		<input type="datetime" name="start" required="required" /><br>
+		<label for="stop">Stop (Unix timestamp):</label>
+		<input type="datetime" name="stop" required="required" /><br>
+		<input type="submit" value="Add" />
+	</form>
+{if !empty($tracks)}
+	<h1>Add Post</h1>
+	<form method="post">
+		<label for="track">Name:</label>
+		<select name="track" required="required">
+{foreach from=$tracks item=track}
+			<option value="{$track->getId()}">{$track->getName()}</option>
+{/foreach}
+		</select><br>
+		<label for="radius">Radius:</label>
+		<input type="text" name="radius" required="required" /><br>
+		<label for="latitude">Latitude:</label>
+		<input type="text" name="latitude" required="required" /><br>
+		<label for="longitude">Longitude:</label>
+		<input type="text" name="longitude" required="required" /><br>
+		<label for="clue">Clue:</label>
+		<textarea name="clue" placeholder="Under the cat!"></textarea>
+		<input type="submit" value="Add" />
+	</form>
+{/if}
 {/if}
 <footer><p>Alle rettigheter &copy; Vegard Lang&aring;s og Daniel Razafimandimby.<br>Mer info om cms-et p&aring; <a href="https://github.com/sjefen6/rebus-db" target="_blank">github</a></p></footer>
 </section>

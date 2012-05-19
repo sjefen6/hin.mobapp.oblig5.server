@@ -3,7 +3,7 @@
 /*
  * Inputs
  */
-$username = $password = $sessionkey = $validationkey = $action = $target = $track = $latitude = $longitude = $post = null;
+$username = $password = $sessionkey = $validationkey = $action = $target = $track = $latitude = $longitude = $post = $name = $start = $stop = $clue = null;
 $_POSTGET = array_merge($_GET, $_POST);
 $_GETCOOKIE = array_merge($_GET, $_COOKIE);
 $_GETPOSTCOOKIE = array_merge($_COOKIE,$_POST,$_GET);
@@ -56,5 +56,28 @@ if (isset($_POSTGET["longitude"])){
 if (isset($_POSTGET["post"])){
 	$post = htmlspecialchars($_POSTGET["post"]);
 }
+
+// This is used only by the web interface
+// Name (track name)
+if (isset($_POST["name"])){
+	$name = htmlspecialchars($_POSTGET["name"]);
+}
+// Start (track start_ts)
+if (isset($_POST["start"])){
+	$start = htmlspecialchars($_POSTGET["start"]);
+}
+// Start (track start_ts)
+if (isset($_POST["stop"])){
+	$stop = htmlspecialchars($_POSTGET["stop"]);
+}
+// Clue (post clue)
+if (isset($_POST["radius"])){
+	$radius = htmlspecialchars($_POSTGET["radius"]);
+}
+// Clue (post clue)
+if (isset($_POST["clue"])){
+	$clue = htmlspecialchars($_POSTGET["clue"]);
+}
+
 
 ?>

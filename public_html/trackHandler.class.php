@@ -24,6 +24,16 @@ class trackHandler {
 		return $this->trackArray;
 	}
 	
+	public function getArrayForUser($user){
+		$returnArray = array();
+		foreach ($this->trackArray as $track){
+			if ($track->getCreatorId() == $user->getId()){
+				$returnArray[] = $track;
+			}
+		}
+		return $returnArray;
+	}
+	
 	public function addTrack($name, $creator, $start_ts, $stop_ts){
 		$this->trackArray[] = new track($name, $creator, $start_ts, $stop_ts);
 	}

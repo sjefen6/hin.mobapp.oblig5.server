@@ -86,9 +86,35 @@ switch ($action) {
 }
 
 /*
+ * If a logged in user adds a track
+ */
+if(isset($name,$start,$stop) && isset($user)){
+	$tracks->addTrack($name, $user->getId(), $start, $stop);
+} else {
+	$errors[] = "Get a <a href\"http://google.com/chrome\">decent browser</a>, then fill inn the entire form.";
+}
+
+/*
+ * If a logged in user adds a post
+ */
+if(isset($track,$radius,$latitude,$longitude) && isset($user)){
+	if ($tracks->getTrack($track) != null){
+		if($tracks->getTrack($track)->getCreatorId() == $user->getId()){
+			$posts->addPost($track, $radius, $latitude, $longitude, $clue);
+		} else {
+			$errors[] = "You are not the creator of this track. PS: cheating is not nice.";
+		}
+	} else {
+		$errors[] = "I don't think this is a track in our database. PS: cheating is not nice.";
+	}
+} else {
+	$errors[] = "Get a <a href\"http://google.com/chrome\">decent browser</a>, then fill inn the entire form.";
+}
+
+/*
  * If a logged in user sends lat & long
  */
-if(isset($user,$latitude,$longitude)){
+if(isset($user,$latitude,$longitude) && empty($clue)){
 	$user->report($latitude,$longitude);
 }
 
@@ -184,6 +210,9 @@ $smarty->assign("errors",$errors);
 if ($format == "xml"){
 	$smarty->display('index.xml.tpl');
 } else {
+	if(isset($user)){
+		$smarty->assign("tracks", $tracks->getArrayForUser($user));
+	}
 	$smarty->display('index.html.tpl');
 }
 
