@@ -65,10 +65,14 @@ switch ($action) {
 		$smarty->assign("action", "auth");
 		break;
 	case "join":
-		if(isset($user)){
-			$user->join($track);
+		if (isset($track)){
+			if(isset($user)){
+				$user->join($track);
+			} else {
+				$errors[] = "Cannot join track $track. User is not signed in.";
+			}
 		} else {
-			$errors[] = "Cannot join track $track. User is not signed in.";
+			$errors[] = "Unable to join. Track not specified.";
 		}
 		break;
 	case "reached":
