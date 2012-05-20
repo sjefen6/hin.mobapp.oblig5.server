@@ -202,10 +202,22 @@ switch ($target) {
 		}
 		exit;
         break;
-	case "result":
+	case "results":
 		// Scoreboard for a given track
-		//TODO: Make sure to ignore that this is not implemented!!!!
+		$current_results = null;
+		if(isset($track)){
+			$current_results = tools::getResults($users, $vps, $track);
+			if (empty($current_results)){
+				$errors[] = "No results found!";
+			}
+		} else {
+			$errors[] = "Undefined track. Please specify track!";
+		}
+		$smarty->assign("results",$current_results);
 		$smarty->assign("errors",$errors);
+		if ($format == "xml"){
+			$smarty->display('results.xml.tpl');
+		}
 		exit;
 		break;
 }

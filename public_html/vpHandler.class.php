@@ -33,19 +33,19 @@ class vpHandler{
 		return null;
 	}
 	
-	public function getArray($user=null){
-		if(!isset($user)){
-			return $this->trackArray;
-		} else {
-			$returnArray = array();
-			foreach ($vpArray as $vp) {
-				if($vp->getUser_ID() == $user->getId())
-				{
-					$returnArray[] = $vp;
-				}
+	public function getArray(){
+		return $this->trackArray;
+	}
+	
+	public function getArrayForUserWhereTrack($user,$track_id){
+		$returnArray = array();
+		foreach ($this->vpArray as $vp) {
+			if($vp->getTrack_ID() == $track_id && $vp->getUser_ID() == $user->getId())
+			{
+				$returnArray[] = $vp;
 			}
-			return $returnArray;
 		}
+		return $returnArray;
 	}
 	
 	public function addVp($user_id, $track_id, $post_id, $ts){

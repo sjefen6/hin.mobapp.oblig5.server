@@ -14,12 +14,12 @@ class tools{
 	public static function getResults($users,$vps,$track){
 		$resultArray = array();
 		$userArray = $users->getArray();
-
-		$users_size = count($userArray);
-		for($i = 0; $i < $users_size; $i++)
+		foreach($userArray as $user)
 		{
-			$vpArray = $vps->getArray($userArray[i]);
-			$resultArray[] = array('username' => $userArray[i]->getUsername(), 'posts' => count($vpArray), 'lvpts' => end($vpArray)->getTS()); 
+			$vpArray = $vps->getArrayForUserWhereTrack($user, $track);
+			if(!empty($vpArray)){
+				$resultArray[] = array('username' => $user->getUsername(), 'posts' => count($vpArray), 'lvpts' => end($vpArray)->getTS());
+			} 
 		}
 		return $resultArray;
 	}
